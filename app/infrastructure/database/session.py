@@ -12,8 +12,8 @@ from app.config.settings import get_settings
 settings = get_settings()
 engine: AsyncEngine = create_async_engine(
     settings.database_url,
-    echo=settings.environment == "development",
-    pool_pre_ping=True,
+    echo=settings.database_echo,
+    pool_pre_ping=settings.database_pool_pre_ping,
 )
 
 AsyncSessionFactory = async_sessionmaker(
@@ -25,5 +25,6 @@ AsyncSessionFactory = async_sessionmaker(
 
 async def get_db_session() -> AsyncIterator[AsyncSession]:
     """Yield one database session and close it after the request."""
+
     async with AsyncSessionFactory() as session:
         yield session

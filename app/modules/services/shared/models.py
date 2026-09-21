@@ -8,6 +8,7 @@ from sqlalchemy import (
     BigInteger,
     Boolean,
     CheckConstraint,
+    Computed,
     Date,
     DateTime,
     ForeignKey,
@@ -18,10 +19,22 @@ from sqlalchemy import (
     Time,
     UniqueConstraint,
     func,
+    text,
 )
+from sqlalchemy.dialects.postgresql import ExcludeConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.infrastructure.database.base import Base
+from app.modules.services.shared.domain_types import (
+    BookingChannel,
+    BookingStatus,
+    CalendarProvider,
+    CalendarSyncStatus,
+    ClientAccountStatus,
+    NotificationChannel,
+    NotificationStatus,
+)
+from app.modules.services.shared.service_types import ServiceType
 
 
 class TimestampMixin:
@@ -85,14 +98,17 @@ class Client(TimestampMixin, Base):
     whatsapp: Mapped[str | None] = mapped_column(String(30), nullable=True)
     fecha_nacimiento: Mapped[date | None] = mapped_column(Date, nullable=True)
     estado_cuenta: Mapped[str] = mapped_column(
-        String(20), default="ACTIVA", nullable=False
+        String(20), default=ClientAccountStatus.ACTIVE.value, nullable=False
     )
 
     reservas: Mapped[list[Booking]] = relationship(back_populates="cliente")
 
     __table_args__ = (
         CheckConstraint(
-            "estado_cuenta IN ('ACTIVA', 'SUSPENDIDA', 'INACTIVA')",
+            "estado_cuenta IN ("
+            f"'{ClientAccountStatus.ACTIVE.value}', "
+            f"'{ClientAccountStatus.SUSPENDED.value}', "
+            f"'{ClientAccountStatus.INACTIVE.value}')",
             name="ck_clientes_estado_cuenta",
         ),
     )
@@ -116,7 +132,9 @@ class Service(TimestampMixin, Base):
 
     __table_args__ = (
         CheckConstraint(
-            "tipo_servicio IN ('BARBERIA', 'PELUQUERIA')",
+            "tipo_servicio IN ("
+            + ", ".join(f"'{service_type.value}'" for service_type in ServiceType)
+            + ")",
             name="ck_servicios_tipo_servicio",
         ),
         CheckConstraint("duracion_minutos > 0", name="ck_servicios_duracion_positiva"),
@@ -191,9 +209,20 @@ class Booking(TimestampMixin, Base):
         DateTime(timezone=True), nullable=False
     )
     duracion_minutos: Mapped[int] = mapped_column(default=60, nullable=False)
-    estado: Mapped[str] = mapped_column(String(20), default="PENDIENTE", nullable=False)
+    fecha_fin: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        Computed(
+            "(fecha_inicio AT TIME ZONE 'UTC') + "
+            "(duracion_minutos * interval '1 minute')",
+            persisted=True,
+        ),
+        nullable=False,
+    )
+    estado: Mapped[str] = mapped_column(
+        String(20), default=BookingStatus.PENDING.value, nullable=False
+    )
     canal_reserva: Mapped[str] = mapped_column(
-        String(20), default="WEB", nullable=False
+        String(20), default=BookingChannel.WEB.value, nullable=False
     )
     precio_estimado: Mapped[Decimal] = mapped_column(
         Numeric(12, 2), default=Decimal(0), nullable=False
@@ -221,18 +250,42 @@ class Booking(TimestampMixin, Base):
     __table_args__ = (
         CheckConstraint(
             "estado IN ("
-            "'PENDIENTE', 'EN_ESPERA', 'AGENDADA', 'RESERVADA', "
-            "'CONFIRMADA', 'ASISTIO', 'NO_ASISTIO', 'CANCELADA')",
+            + ", ".join(f"'{status.value}'" for status in BookingStatus)
+            + ")",
             name="ck_reservas_estado",
         ),
         CheckConstraint(
-            "canal_reserva IN ('WEB', 'ADMIN', 'TELEFONO', 'WHATSAPP')",
+            "canal_reserva IN ("
+            + ", ".join(f"'{channel.value}'" for channel in BookingChannel)
+            + ")",
             name="ck_reservas_canal",
         ),
         CheckConstraint("duracion_minutos > 0", name="ck_reservas_duracion_positiva"),
         CheckConstraint("precio_estimado >= 0", name="ck_reservas_precio_no_negativo"),
         Index("ix_reservas_agenda_peluquero_fecha", "peluquero_id", "fecha_inicio"),
         Index("ix_reservas_cliente_fecha", "cliente_id", "fecha_inicio"),
+        ExcludeConstraint(
+            ("peluquero_id", "="),
+            (
+                text("tsrange(fecha_inicio AT TIME ZONE 'UTC', fecha_fin, '[)')"),
+                "&&",
+            ),
+            where=text(
+                "estado IN ("
+                + ", ".join(
+                    f"'{status.value}'"
+                    for status in BookingStatus
+                    if status
+                    not in {
+                        BookingStatus.ATTENDED,
+                        BookingStatus.NO_SHOW,
+                        BookingStatus.CANCELLED,
+                    }
+                )
+                + ")"
+            ),
+            name="ex_reservas_peluquero_horario_activo",
+        ),
     )
 
 
@@ -268,7 +321,7 @@ class Notification(Base):
     canal: Mapped[str] = mapped_column(String(20), nullable=False)
     destinatario: Mapped[str] = mapped_column(String(254), nullable=False)
     estado_envio: Mapped[str] = mapped_column(
-        String(20), default="PENDIENTE", nullable=False
+        String(20), default=NotificationStatus.PENDING.value, nullable=False
     )
     fecha_programada: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
@@ -281,10 +334,15 @@ class Notification(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "canal IN ('EMAIL', 'WHATSAPP', 'SMS')", name="ck_notificaciones_canal"
+            "canal IN ("
+            + ", ".join(f"'{channel.value}'" for channel in NotificationChannel)
+            + ")",
+            name="ck_notificaciones_canal",
         ),
         CheckConstraint(
-            "estado_envio IN ('PENDIENTE', 'ENVIADA', 'FALLIDA')",
+            "estado_envio IN ("
+            + ", ".join(f"'{status.value}'" for status in NotificationStatus)
+            + ")",
             name="ck_notificaciones_estado_envio",
         ),
         Index("ix_notificaciones_pendientes", "estado_envio", "fecha_programada"),
@@ -299,11 +357,11 @@ class CalendarEvent(Base):
         BigInteger, ForeignKey("reservas.id", ondelete="CASCADE"), nullable=False
     )
     proveedor: Mapped[str] = mapped_column(
-        String(30), default="GOOGLE_CALENDAR", nullable=False
+        String(30), default=CalendarProvider.GOOGLE_CALENDAR.value, nullable=False
     )
     evento_externo_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
     estado_sync: Mapped[str] = mapped_column(
-        String(20), default="PENDIENTE", nullable=False
+        String(20), default=CalendarSyncStatus.PENDING.value, nullable=False
     )
     ultima_sincronizacion: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
@@ -317,7 +375,9 @@ class CalendarEvent(Base):
             "reserva_id", "proveedor", name="uq_evento_calendario_reserva_proveedor"
         ),
         CheckConstraint(
-            "estado_sync IN ('PENDIENTE', 'SINCRONIZADO', 'FALLIDO', 'CANCELADO')",
+            "estado_sync IN ("
+            + ", ".join(f"'{status.value}'" for status in CalendarSyncStatus)
+            + ")",
             name="ck_eventos_calendario_estado_sync",
         ),
     )

@@ -1,14 +1,16 @@
 from fastapi import FastAPI
 
+from app.config.settings import get_settings
 from app.shared.errors.application_error import ApplicationError
 from app.shared.errors.handlers import (
     application_error_handler,
     unexpected_error_handler,
 )
 
+settings = get_settings()
 app = FastAPI(
-    title="After Look",
-    version="0.1.0",
+    title=settings.app_name,
+    version=settings.app_version,
 )
 
 app.add_exception_handler(ApplicationError, application_error_handler)
@@ -19,7 +21,7 @@ app.add_exception_handler(Exception, unexpected_error_handler)
 @app.get("/")
 async def root() -> dict[str, str]:
     return {
-        "message": "After Look API",
+        "message": f"{settings.app_name} API",
         "status": "running",
     }
 
