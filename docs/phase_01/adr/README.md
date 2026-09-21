@@ -24,3 +24,8 @@ Los ADR no reemplazan requisitos ni diagramas. Sirven para conservar el porqué 
 | [ADR-006](ADR-006-postergar-integraciones-externas-del-mvp.md) | Definir integraciones externas del MVP | Reemplazado por ADR-008 |
 | [ADR-007](ADR-007-validar-reglas-de-negocio-antes-de-implementar.md) | Validar reglas de negocio antes de implementar | Aceptado |
 | [ADR-008](ADR-008-incorporar-google-calendar-y-postergar-whatsapp-pagos.md) | Incorporar Google Calendar y postergar WhatsApp y pagos | Aceptado |
+| [ADR-009](ADR-009-seed-idempotente-y-validado.md) | Usar un seed idempotente y validado | Aceptado |
+| [ADR-010](ADR-010-configuracion-tipada-desde-entorno.md) | Centralizar la configuración tipada desde el entorno | Aceptado |
+| [ADR-011](ADR-011-centralizar-vocabularios-del-dominio.md) | Centralizar vocabularios del dominio mediante enums | Aceptado |
+| [ADR-012](ADR-012-proteger-solapamientos-en-postgresql.md) | Proteger los solapamientos de reservas en PostgreSQL | Aceptado |
+| [ADR-013](ADR-013-versionar-el-estado-de-implementacion.md) | Versionar y sincronizar el estado de implementación | Aceptado |

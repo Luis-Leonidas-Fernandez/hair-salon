@@ -30,7 +30,7 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 | Consulta de disponibilidad | BR-Horarios, BR-Prevención | RF-005 | RNF-CON-05 | CU-003, CU-008 | disponibilidades | ADR-001, ADR-003 | Cubierto |
 | Reserva de turno | BR-Reservas, MVP-Entra | RF-006, RF-007, RF-008 | RNF-CON-02 | CU-003 | reservas | ADR-001, ADR-003 | Cubierto |
 | Ventana de reserva | BR-Reservas, MVP-Supuestos | RF-007, RF-008 | RNF-USA-01 | CU-003 | reservas.fecha_inicio | ADR-003 | Cubierto |
-| Prevención de solapamientos | BR-Prevención, MVP-Cierre | RF-025 | RNF-CON-02, RNF-USA-02 | CU-003 | reservas, índices físicos | ADR-001, ADR-003 | Cubierto |
+| Prevención de solapamientos | BR-Prevención, MVP-Cierre | RF-025 | RNF-CON-02, RNF-USA-02 | CU-003 | reservas.fecha_fin, exclusión GiST | ADR-001, ADR-003 | Cubierto en PostgreSQL |
 | Modificación de turno | BR-Modificación | RF-009 | RNF-CON-03, RNF-CON-04 | CU-004 | reservas, historial_reservas | ADR-003, ADR-005 | Cubierto |
 | Cancelación cliente | BR-Cancelaciones | RF-010 | RNF-CON-04 | CU-005 | reservas.estado, historial_reservas | ADR-005 | Cubierto |
 | Cancelación interna | BR-Cancelaciones | RF-011 | RNF-CON-04 | CU-005, CU-011 | reservas, historial_reservas | ADR-005 | Cubierto |
@@ -60,6 +60,11 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 | ADR-006 | Definir integraciones externas del MVP | Reemplazado por ADR-008. |
 | ADR-007 | Validar reglas de negocio antes de implementar | Validación del negocio y actualización documental. |
 | ADR-008 | Incorporar Google Calendar y postergar WhatsApp y pagos | Google Calendar en MVP, WhatsApp pendiente, pagos y señas fuera. |
+| ADR-009 | Usar un seed idempotente y validado | Datos iniciales, validaciones previas y transacción atómica. |
+| ADR-010 | Centralizar la configuración tipada desde el entorno | `.env`, settings, conexión de base y seed. |
+| ADR-011 | Centralizar vocabularios del dominio mediante enums | Estados, canales, roles y restricciones compatibles con PostgreSQL. |
+| ADR-012 | Proteger los solapamientos de reservas en PostgreSQL | `fecha_fin`, `btree_gist` y exclusión GiST. |
+| ADR-013 | Versionar y sincronizar el estado de implementación | Estado v1.2, trazabilidad y TASKS alineadas. |
 
 ## 4. Cobertura por modelo de datos
 
@@ -94,9 +99,9 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 | ¿Cada funcionalidad crítica tiene caso de uso? | Sí. |
 | ¿Cada integración incluida está respaldada por ADR? | Sí: Google OAuth y Calendar quedan cubiertos; WhatsApp pendiente. |
 | ¿Pagos y señas aparecen como funcionalidad del MVP? | No. Quedan excluidos. |
-| ¿Los modelos reflejan los requisitos principales? | Sí, en versión v1.1. |
+| ¿Los modelos reflejan los requisitos principales? | Sí, con la integridad física de reservas implementada en v1.2. |
 | ¿Hay pendientes visibles antes de implementar? | Sí: WhatsApp, estados similares, descansos y reintentos Calendar. |
 
 ## 7. Conclusión
 
-La trazabilidad muestra que el MVP tiene cobertura documental suficiente para pasar de análisis a diseño técnico o planificación de implementación. Las únicas brechas relevantes son decisiones pendientes explícitas, no omisiones ocultas. El próximo ajuste recomendado es actualizar el documento de desajuste objeto-relacional para alinearlo con los modelos v1.1 y con Google Calendar como integración del MVP.
+La trazabilidad muestra que el MVP tiene cobertura documental suficiente para continuar con la implementación. La prevención de solapamientos ya está respaldada por una restricción PostgreSQL aplicada, además de las validaciones previstas en backend. Las brechas restantes son decisiones pendientes explícitas: WhatsApp, estados similares, descansos y reintentos de Calendar.

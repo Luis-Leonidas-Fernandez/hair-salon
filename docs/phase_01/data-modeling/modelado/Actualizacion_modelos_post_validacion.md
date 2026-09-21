@@ -40,6 +40,16 @@ La validación mencionó estados del negocio, pero no conviene trasladarlos como
 - Descansos automáticos: la respuesta indica que dependen de la cantidad de clientes, por lo tanto conviene modelarlos como bloqueos manuales al inicio.
 - Pagos y señas: fuera de alcance actual. No agregar tablas de pago todavía.
 
+## Cambios técnicos implementados después de la validación
+
+| Cambio | Implementación | Estado |
+| --- | --- | --- |
+| Vocabularios controlados | Enums en `app/modules/services/shared/domain_types.py` y módulos existentes | Implementado |
+| Solapamientos | `reservas.fecha_fin` generada y exclusión GiST por peluquero | Implementado |
+| Migración física | `20260920_01_reservation_integrity` aplicada en PostgreSQL | Implementado |
+| Precios | Se mantienen como dato interno; no se muestran al cliente | Vigente |
+| Pagos y señas | No se agregan tablas ni flujo | Fuera de alcance |
+
 ## Próxima acción recomendada
 
-Redibujar `modelo-logico.png` y `modelo-fisico.png` en una versión 1.1 incorporando estos cambios, especialmente estados, campos de cliente, Google Calendar como integración derivada y exclusión de pagos.
+Actualizar las imágenes de modelo lógico y físico cuando se realice la siguiente revisión visual. La fuente técnica vigente para la restricción contra solapamientos es `docs/phase_01/implementation/Estado_implementacion_Peluqueria_Sergio_v1.2.md` y la migración aplicada.
