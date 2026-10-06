@@ -1,0 +1,242 @@
+---
+import '../styles/global.css';
+import '../styles/completar-perfil.css';
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Completá tus datos de contacto para finalizar tu registro en After Look." />
+    <title>Completar Perfil / After Look</title>
+  </head>
+  <body class="onboarding-page">
+    <main class="onboarding-shell" aria-labelledby="onboarding-title">
+      <section class="onboarding-photo-panel" aria-label="Imagen editorial del salón">
+        <img src="/images/hero-barber.png" alt="Barbero trabajando en After Look, iluminación dramática" />
+        <a class="onboarding-brand" href="/" aria-label="Volver al inicio de After Look">After Look</a>
+        <div class="onboarding-photo-caption" aria-hidden="true">
+          <span></span>
+          <p>Registro exclusivo de clientes</p>
+        </div>
+      </section>
+
+      <section class="onboarding-content-panel">
+        <header class="onboarding-topbar">
+          <div class="onboarding-greeting" id="user-greeting-container" style="display: none;">
+            <span aria-hidden="true">✦</span>
+            <span id="user-display">¡Hola!</span>
+          </div>
+          <button id="logout-btn" class="onboarding-logout-btn" type="button" style="display: none;">Cerrar sesión</button>
+        </header>
+
+        <div class="onboarding-copy">
+          <p class="onboarding-kicker">Paso final / Contacto</p>
+          <h1 id="onboarding-title">Completá tus datos de contacto.</h1>
+          <p class="onboarding-lede">Para confirmar turnos, enviarte recordatorios y ofrecerte una atención personalizada, necesitamos tu número de teléfono.</p>
+        </div>
+
+        <form id="complete-profile-form" class="onboarding-form" novalidate>
+          <div class="form-group">
+            <label for="telefono">Teléfono de contacto <span style="color: var(--accent-bright);">*</span></label>
+            <input
+              type="tel"
+              id="telefono"
+              name="telefono"
+              class="form-input"
+              placeholder="+54 9 11 1234-5678"
+              autocomplete="tel"
+              required
+            />
+            <p class="form-hint">Ingresá tu código de área y número.</p>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="same-whatsapp" name="same_whatsapp" checked />
+            <label for="same-whatsapp">Mi WhatsApp es el mismo número</label>
+          </div>
+
+          <div class="form-group" id="whatsapp-group" style="display: none;">
+            <label for="whatsapp">Número de WhatsApp</label>
+            <input
+              type="tel"
+              id="whatsapp"
+              name="whatsapp"
+              class="form-input"
+              placeholder="+54 9 11 9876-5432"
+              autocomplete="tel"
+            />
+            <p class="form-hint">Ingresá tu WhatsApp si difiere de tu teléfono principal.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="fecha_nacimiento">Fecha de nacimiento <span style="font-weight: 400; color: var(--muted-2);">(opcional)</span></label>
+            <input
+              type="date"
+              id="fecha_nacimiento"
+              name="fecha_nacimiento"
+              class="form-input"
+              autocomplete="bday"
+            />
+            <p class="form-hint">Para recibir atenciones especiales en tu cumpleaños.</p>
+          </div>
+
+          <div id="form-feedback" class="form-feedback" role="alert" aria-live="polite"></div>
+
+          <button type="submit" id="submit-btn" class="onboarding-submit-btn">
+            Guardar y continuar a reservas
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      const ERROR_MAP: Record<string, string> = {
+        NOT_AUTHENTICATED: "Debés iniciar sesión para completar tu perfil.",
+        FORBIDDEN_STAFF_ACTOR: "Los administradores y peluqueros gestionan su cuenta desde el panel interno.",
+        CLIENT_NOT_FOUND: "No se encontró el registro de cliente.",
+        CLIENT_ACCOUNT_SUSPENDED: "Tu cuenta de cliente está suspendida. Contactá al salón.",
+      };
+
+      async function initOnboarding() {
+        const userGreetingContainer = document.getElementById("user-greeting-container");
+        const userDisplay = document.getElementById("user-display");
+        const logoutBtn = document.getElementById("logout-btn");
+        const form = document.getElementById("complete-profile-form") as HTMLFormElement | null;
+        const phoneInput = document.getElementById("telefono") as HTMLInputElement | null;
+        const sameWhatsappCheckbox = document.getElementById("same-whatsapp") as HTMLInputElement | null;
+        const whatsappGroup = document.getElementById("whatsapp-group");
+        const whatsappInput = document.getElementById("whatsapp") as HTMLInputElement | null;
+        const birthDateInput = document.getElementById("fecha_nacimiento") as HTMLInputElement | null;
+        const feedback = document.getElementById("form-feedback");
+        const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement | null;
+
+        try {
+          const res = await fetch("/auth/me");
+          if (!res.ok) {
+            window.location.href = "/registro/";
+            return;
+          }
+
+          const user = await res.json();
+          if (user.profile_complete) {
+            window.location.href = "/reservas/";
+            return;
+          }
+
+          if (userGreetingContainer && userDisplay) {
+            userDisplay.textContent = `¡Hola, ${user.nombre}!`;
+            userGreetingContainer.style.display = "inline-flex";
+          }
+
+          if (logoutBtn) {
+            logoutBtn.style.display = "inline-block";
+            logoutBtn.addEventListener("click", async () => {
+              await fetch("/auth/logout", { method: "POST" });
+              window.location.href = "/registro/";
+            });
+          }
+        } catch {
+          window.location.href = "/registro/";
+          return;
+        }
+
+        if (sameWhatsappCheckbox && whatsappGroup) {
+          sameWhatsappCheckbox.addEventListener("change", () => {
+            if (sameWhatsappCheckbox.checked) {
+              whatsappGroup.style.display = "none";
+              if (whatsappInput) whatsappInput.value = "";
+            } else {
+              whatsappGroup.style.display = "flex";
+              if (whatsappInput && phoneInput && !whatsappInput.value) {
+                whatsappInput.value = phoneInput.value;
+              }
+            }
+          });
+        }
+
+        if (form && phoneInput && submitBtn) {
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            if (feedback) {
+              feedback.textContent = "";
+              feedback.className = "form-feedback";
+            }
+
+            const rawPhone = phoneInput.value.trim();
+            if (!rawPhone || rawPhone.length < 6) {
+              if (feedback) {
+                feedback.textContent = "Por favor ingresá un número de teléfono válido (mínimo 6 caracteres).";
+                feedback.className = "form-feedback error";
+              }
+              phoneInput.focus();
+              return;
+            }
+
+            let whatsappVal: string | null = null;
+            if (sameWhatsappCheckbox && sameWhatsappCheckbox.checked) {
+              whatsappVal = rawPhone;
+            } else if (whatsappInput && whatsappInput.value.trim()) {
+              whatsappVal = whatsappInput.value.trim();
+            }
+
+            const birthVal = birthDateInput && birthDateInput.value ? birthDateInput.value : null;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Guardando...";
+
+            try {
+              const res = await fetch("/auth/complete-profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  telefono: rawPhone,
+                  whatsapp: whatsappVal,
+                  fecha_nacimiento: birthVal,
+                }),
+              });
+
+              if (res.ok) {
+                if (feedback) {
+                  feedback.textContent = "¡Perfil actualizado con éxito! Redirigiendo...";
+                  feedback.className = "form-feedback success";
+                }
+                setTimeout(() => {
+                  window.location.href = "/reservas/";
+                }, 500);
+              } else {
+                const errData = await res.json().catch(() => ({}));
+                const errDetail = errData.detail;
+                let errorMsg = "No pudimos guardar tus datos. Por favor revisá la información.";
+
+                if (typeof errDetail === "string" && ERROR_MAP[errDetail]) {
+                  errorMsg = ERROR_MAP[errDetail];
+                } else if (Array.isArray(errDetail) && errDetail[0]?.msg) {
+                  errorMsg = errDetail[0].msg;
+                }
+
+                if (feedback) {
+                  feedback.textContent = errorMsg;
+                  feedback.className = "form-feedback error";
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Guardar y continuar a reservas";
+              }
+            } catch {
+              if (feedback) {
+                feedback.textContent = "Error de conexión. Por favor intentá nuevamente.";
+                feedback.className = "form-feedback error";
+              }
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Guardar y continuar a reservas";
+            }
+          });
+        }
+      }
+
+      initOnboarding();
+    </script>
+  </body>
+</html>

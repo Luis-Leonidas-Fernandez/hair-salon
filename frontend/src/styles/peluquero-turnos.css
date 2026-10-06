@@ -1,0 +1,1633 @@
+/* ==========================================================================
+   After Look - Turnos & Agenda Peluquero (CU-010 & CU-011)
+   Refined Luxury Dark-Gold Aesthetic (matching reservas.css)
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+.turnos-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(248, 197, 107, .18), transparent 36rem),
+    linear-gradient(180deg, #171717 0%, var(--bg) 34%);
+  color: var(--fg);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.turnos-shell {
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: clamp(21px, calc(3vw + 5px), 45px) clamp(21px, calc(3.2vw + 5px), 41px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 2.6vw, 36px);
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* ==========================================================================
+   Top Navigation Bar (matching reservas topbar)
+   ========================================================================== */
+
+.turnos-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: clamp(12px, 1.8vw, 20px);
+  border-bottom: 1px solid rgba(248, 197, 107, 0.16);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.turnos-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.turnos-back {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 250, 241, .22);
+  background: rgba(3, 4, 11, .55);
+  backdrop-filter: blur(12px);
+  color: rgba(255, 250, 241, .88);
+  font-size: 13px;
+  font-weight: 850;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.turnos-back:hover {
+  border-color: rgba(248, 197, 107, .5);
+  color: var(--accent-bright);
+  background: rgba(215, 155, 63, .12);
+}
+
+.turnos-brand {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 850;
+  letter-spacing: -.03em;
+  text-decoration: none;
+  background: var(--gold-metal);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+
+.turnos-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.stylist-session-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(248, 197, 107, .2);
+  background: rgba(255, 250, 241, .045);
+  backdrop-filter: blur(8px);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.stylist-avatar-mini {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 36% 30%, rgba(248, 197, 107, .95), rgba(215, 155, 63, .42) 70%), var(--surface);
+  color: var(--accent-ink);
+  font-size: 11px;
+  font-weight: 950;
+  flex-shrink: 0;
+}
+
+.stylist-greeting-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 250, 241, .9);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stylist-greeting-text strong {
+  color: var(--accent-bright);
+}
+
+.role-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(215, 155, 63, .14);
+  border: 1px solid rgba(248, 197, 107, .3);
+  color: var(--accent-bright);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.role-tag::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+  box-shadow: 0 0 6px var(--accent);
+}
+
+.btn-logout {
+  background: rgba(255, 250, 241, .06);
+  border: 1px solid rgba(255, 250, 241, .18);
+  color: rgba(255, 250, 241, .78);
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-logout:hover {
+  background: rgba(239, 68, 68, .18);
+  border-color: rgba(239, 68, 68, .45);
+  color: #fca5a5;
+}
+
+/* ==========================================================================
+   Hero Section (matching reservas typography & headers)
+   ========================================================================== */
+
+.turnos-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.turnos-kicker {
+  margin: 0;
+  color: var(--accent-bright);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.turnos-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.8vw, 44px);
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "clig" 0;
+  line-height: 1.15;
+  text-wrap: balance;
+  color: var(--fg);
+  word-break: break-word;
+}
+
+.turnos-subtitle {
+  margin: 0;
+  color: rgba(255, 250, 241, .7);
+  font-size: clamp(14px, 1.2vw, 16px);
+  max-width: 68ch;
+  line-height: 1.55;
+  padding-top: 8px;
+  border-top: 1px solid rgba(248, 197, 107, .2);
+}
+
+/* ==========================================================================
+   Metrics Banner (matching reservas photo card glassmorphism)
+   ========================================================================== */
+
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 20px);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.metric-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(248, 197, 107, .16);
+  background: linear-gradient(160deg, rgba(255, 250, 241, .075), rgba(255, 250, 241, .025)), rgba(3, 4, 11, .9);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .26), inset 0 1px 0 rgba(255, 250, 241, .08);
+  border-radius: clamp(18px, 2vw, 24px);
+  padding: clamp(16px, 1.8vw, 22px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(248, 197, 107, .32);
+}
+
+.metric-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.metric-icon-bubble {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  background: rgba(255, 250, 241, .06);
+  border: 1px solid rgba(248, 197, 107, .2);
+  color: var(--accent-bright);
+  flex-shrink: 0;
+}
+
+.metric-card.confirmed .metric-icon-bubble {
+  background: rgba(215, 155, 63, .16);
+  color: var(--accent-bright);
+}
+
+.metric-card.attended .metric-icon-bubble {
+  background: rgba(16, 185, 129, .15);
+  border-color: rgba(16, 185, 129, .3);
+  color: #34d399;
+}
+
+.metric-card.noshow .metric-icon-bubble {
+  background: rgba(239, 68, 68, .15);
+  border-color: rgba(239, 68, 68, .3);
+  color: #f87171;
+}
+
+.metric-card-label {
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255, 250, 241, .6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric-card-value {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 850;
+  color: var(--fg);
+  line-height: 1;
+}
+
+/* ==========================================================================
+   Filter Panel (matching reservas selection pills & tabs)
+   ========================================================================== */
+
+.filter-panel {
+  border: 1px solid rgba(248, 197, 107, .16);
+  background: linear-gradient(160deg, rgba(255, 250, 241, .05), rgba(255, 250, 241, .02)), rgba(3, 4, 11, .85);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .26), inset 0 1px 0 rgba(255, 250, 241, .06);
+  border-radius: clamp(20px, 2.4vw, 28px);
+  padding: clamp(16px, 2vw, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Date Input styled like reservas pills */
+.date-selector-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.date-selector-label {
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255, 250, 241, .55);
+}
+
+.date-input-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.date-input-styled {
+  background: rgba(255, 250, 241, .06);
+  border: 1px solid rgba(248, 197, 107, .24);
+  color: var(--fg);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 750;
+  outline: none;
+  transition: all 0.2s ease;
+  min-height: 40px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.date-input-styled:focus {
+  border-color: var(--accent-bright);
+  box-shadow: 0 0 0 3px rgba(248, 197, 107, .16);
+  background: rgba(255, 250, 241, .1);
+}
+
+.date-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 250, 241, .16);
+  background: rgba(255, 250, 241, .045);
+  color: rgba(255, 250, 241, .75);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.date-quick-btn:hover {
+  background: rgba(215, 155, 63, .12);
+  border-color: rgba(248, 197, 107, .4);
+  color: var(--accent-bright);
+}
+
+.date-quick-btn.active {
+  background: var(--gold-metal);
+  color: var(--accent-ink);
+  border-color: transparent;
+  box-shadow: 0 8px 24px rgba(215, 155, 63, .25);
+}
+
+/* Status selector container and tabs (matching reservas choice tabs) */
+.status-selector-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.status-selector-label {
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255, 250, 241, .55);
+}
+
+.status-tabs-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.status-tabs-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.status-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 250, 241, .14);
+  background: rgba(255, 250, 241, .04);
+  color: rgba(255, 250, 241, .68);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.status-tab-btn:hover {
+  border-color: rgba(248, 197, 107, .35);
+  color: var(--fg);
+  background: rgba(255, 250, 241, .08);
+}
+
+.status-tab-btn.active {
+  border-color: rgba(248, 197, 107, .7);
+  background: rgba(215, 155, 63, .18);
+  color: var(--accent-bright);
+  box-shadow: 0 0 0 3px rgba(248, 197, 107, .08);
+}
+
+/* ==========================================================================
+   Bookings Container & Cards (matching reservas card elegance)
+   ========================================================================= */
+
+.bookings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.turnos-empty-state {
+  border: 1px dashed rgba(248, 197, 107, .2);
+  border-radius: clamp(20px, 2.5vw, 30px);
+  background: rgba(255, 250, 241, .02);
+  padding: clamp(48px, 6vw, 72px) 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.turnos-empty-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  background: rgba(215, 155, 63, .12);
+  border: 1px solid rgba(248, 197, 107, .28);
+  color: var(--accent-bright);
+  margin-bottom: 4px;
+}
+
+.turnos-empty-state h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 850;
+  color: var(--fg);
+}
+
+.turnos-empty-state p {
+  margin: 0;
+  color: rgba(255, 250, 241, .55);
+  font-size: 14px;
+  max-width: 44ch;
+}
+
+/* Individual Booking Card */
+.booking-card {
+  position: relative;
+  border: 1px solid rgba(248, 197, 107, .16);
+  background: linear-gradient(160deg, rgba(255, 250, 241, .06), rgba(255, 250, 241, .02)), rgba(3, 4, 11, .9);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 250, 241, .07);
+  border-radius: clamp(20px, 2.4vw, 28px);
+  padding: clamp(18px, 2.2vw, 26px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.booking-card:hover {
+  border-color: rgba(248, 197, 107, .38);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .36), 0 0 24px rgba(215, 155, 63, .08);
+}
+
+/* Header Row of Card */
+.booking-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 250, 241, .08);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.booking-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.pill-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(215, 155, 63, .16);
+  border: 1px solid rgba(248, 197, 107, .4);
+  color: var(--accent-bright);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  box-sizing: border-box;
+}
+
+.pill-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 250, 241, .045);
+  border: 1px solid rgba(255, 250, 241, .14);
+  color: rgba(255, 250, 241, .82);
+  font-size: 13px;
+  font-weight: 750;
+  text-transform: capitalize;
+  box-sizing: border-box;
+}
+
+/* Status Badges */
+.pill-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  box-sizing: border-box;
+}
+
+.pill-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pill-status.confirmada {
+  background: rgba(215, 155, 63, .16);
+  border: 1px solid rgba(248, 197, 107, .45);
+  color: var(--accent-bright);
+}
+.pill-status.confirmada::before {
+  background: var(--accent-bright);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.pill-status.asistio {
+  background: rgba(16, 185, 129, .15);
+  border: 1px solid rgba(16, 185, 129, .4);
+  color: #34d399;
+}
+.pill-status.asistio::before {
+  background: #34d399;
+  box-shadow: 0 0 8px rgba(16, 185, 129, .6);
+}
+
+.pill-status.no_asistio {
+  background: rgba(245, 158, 11, .15);
+  border: 1px solid rgba(245, 158, 11, .4);
+  color: #fbbf24;
+}
+.pill-status.no_asistio::before {
+  background: #fbbf24;
+}
+
+.pill-status.cancelada {
+  background: rgba(239, 68, 68, .15);
+  border: 1px solid rgba(239, 68, 68, .4);
+  color: #f87171;
+}
+.pill-status.cancelada::before {
+  background: #f87171;
+}
+
+/* Body Content of Card */
+.booking-card-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: clamp(16px, 2.2vw, 28px);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Service Block */
+.booking-service-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.booking-service-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(17px, 1.6vw, 21px);
+  font-weight: 850;
+  color: var(--fg);
+  letter-spacing: -.02em;
+  word-break: break-word;
+}
+
+.booking-service-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 750;
+  color: rgba(255, 250, 241, .65);
+  white-space: nowrap;
+}
+
+.meta-chip.price {
+  color: var(--accent-bright);
+  font-weight: 850;
+}
+
+/* Client Block */
+.booking-client-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: rgba(255, 250, 241, .03);
+  border: 1px solid rgba(255, 250, 241, .08);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.client-identity-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.client-avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: radial-gradient(circle at 35% 30%, rgba(248, 197, 107, .95), rgba(215, 155, 63, .45) 60%), #14151f;
+  color: var(--accent-ink);
+  font-size: 13px;
+  font-weight: 950;
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 241, .25);
+}
+
+.client-info-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.client-primary-name {
+  font-size: 15px;
+  font-weight: 850;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.client-email-sub {
+  font-size: 12px;
+  color: rgba(255, 250, 241, .5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.client-contacts-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.client-phone-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 750;
+  color: rgba(255, 250, 241, .8);
+  background: rgba(255, 250, 241, .05);
+  border: 1px solid rgba(255, 250, 241, .12);
+  padding: 5px 10px;
+  border-radius: 999px;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.client-phone-pill:hover {
+  background: rgba(255, 250, 241, .1);
+  border-color: rgba(248, 197, 107, .4);
+  color: var(--accent-bright);
+}
+
+/* Authentic WhatsApp Button */
+.btn-whatsapp-direct {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #25D366;
+  color: #052e16;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, .25);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.btn-whatsapp-direct svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.btn-whatsapp-direct:hover {
+  background: #22c55e;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, .4);
+  color: #052e16;
+}
+
+/* Client Notes Subcard (matching booking-client-block aesthetic) */
+.booking-notes-block {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: rgba(255, 250, 241, .03);
+  border: 1px solid rgba(255, 250, 241, .08);
+  min-width: 0;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.booking-notes-block:hover {
+  border-color: rgba(248, 197, 107, .2);
+}
+
+.notes-identity-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.notes-avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: radial-gradient(circle at 35% 30%, rgba(248, 197, 107, .95), rgba(215, 155, 63, .45) 60%), #14151f;
+  color: var(--accent-ink);
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 241, .25);
+}
+
+.notes-avatar-circle svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.notes-info-headings {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.notes-primary-label {
+  font-size: 14px;
+  font-weight: 850;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notes-email-sub {
+  font-size: 11px;
+  color: rgba(255, 250, 241, .5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notes-bubble-row {
+  padding: 10px 14px;
+  background: rgba(255, 250, 241, .025);
+  border: 1px solid rgba(255, 250, 241, .06);
+  border-radius: 12px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.notes-body-quote {
+  margin: 0;
+  color: rgba(255, 250, 241, .9);
+  font-size: 13px;
+  line-height: 1.5;
+  font-style: italic;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Card Actions Footer */
+.booking-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 250, 241, .08);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.btn-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .02em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.btn-action-attended {
+  background: rgba(16, 185, 129, .15);
+  border-color: rgba(16, 185, 129, .4);
+  color: #34d399;
+}
+
+.btn-action-attended:hover:not(:disabled) {
+  background: #10b981;
+  color: #022c22;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, .3);
+}
+
+.btn-action-noshow {
+  background: rgba(245, 158, 11, .15);
+  border-color: rgba(245, 158, 11, .4);
+  color: #fbbf24;
+}
+
+.btn-action-noshow:hover:not(:disabled) {
+  background: #f59e0b;
+  color: #451a03;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, .3);
+}
+
+.btn-action-cancel {
+  background: rgba(239, 68, 68, .1);
+  border-color: rgba(239, 68, 68, .3);
+  color: #fca5a5;
+}
+
+.btn-action-cancel:hover:not(:disabled) {
+  background: #ef4444;
+  color: #450a0a;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, .3);
+}
+
+.btn-action-pill:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+/* ==========================================================================
+   Toast Notification (matching reservas toast / modal aesthetic)
+   ========================================================================== */
+
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  min-width: 260px;
+  max-width: 420px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .45);
+  animation: toastSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast.toast-success {
+  background: #064e3b;
+  border: 1px solid #10b981;
+  color: #d1fae5;
+}
+
+.toast.toast-error {
+  background: #7f1d1d;
+  border: 1px solid #ef4444;
+  color: #fee2e2;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints: Tablet & Large Mobile (<= 960px)
+   ========================================================================== */
+
+@media (max-width: 960px) {
+  .metrics-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-card-body {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints: Mobile (<= 640px)
+   Safe area insets, refined hierarchy, zero-overflow design
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .turnos-page {
+    padding-top: env(safe-area-inset-top, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .turnos-shell {
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    padding-left: max(21px, calc(env(safe-area-inset-left) + 5px));
+    padding-right: max(21px, calc(env(safe-area-inset-right) + 5px));
+    padding-top: max(19px, env(safe-area-inset-top));
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+    gap: 18px;
+  }
+
+  .turnos-topbar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 12px;
+  }
+
+  .turnos-nav-left {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .turnos-brand {
+    font-size: clamp(20px, 5.5vw, 24px);
+  }
+
+  .turnos-nav-right {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .stylist-session-pill {
+    flex: 1;
+    min-width: 0;
+    max-width: calc(100% - 75px);
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 6px 10px;
+  }
+
+  .stylist-avatar-mini {
+    width: 26px;
+    height: 26px;
+    font-size: 10px;
+  }
+
+  .stylist-greeting-text {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+  }
+
+
+
+  .btn-logout {
+    min-height: 36px;
+    padding: 6px 14px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .turnos-hero {
+    gap: 6px;
+  }
+
+  .turnos-kicker {
+    font-size: 11px;
+    letter-spacing: .12em;
+  }
+
+  .turnos-title {
+    font-size: clamp(24px, 6.5vw, 32px);
+    line-height: 1.18;
+    letter-spacing: 0.08em;
+    font-variant-ligatures: none;
+  }
+
+  .turnos-subtitle {
+    font-size: 13px;
+    line-height: 1.45;
+    padding-top: 6px;
+  }
+
+  .metrics-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .metric-card {
+    padding: 10px 12px;
+    border-radius: 16px;
+    gap: 6px;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .metric-card-top {
+    gap: 4px;
+  }
+
+  .metric-icon-bubble {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+
+  .metric-card-label {
+    font-size: 10px;
+    letter-spacing: .04em;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .metric-card-value {
+    font-size: clamp(22px, 5.5vw, 28px);
+  }
+
+  .filter-panel {
+    padding: 12px 14px;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    gap: 12px;
+  }
+
+  .filter-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .date-selector-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .date-selector-label {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    letter-spacing: .08em;
+  }
+
+  .date-input-wrap {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .date-input-styled {
+    width: 100%;
+    min-height: 42px;
+    font-size: 13px;
+    padding: 8px 12px;
+    -webkit-appearance: none;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+
+  .date-quick-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    font-size: 12px;
+    box-sizing: border-box;
+  }
+
+  .status-selector-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .status-selector-label {
+    font-size: 11px;
+    letter-spacing: .08em;
+  }
+
+  .status-tabs-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: visible;
+  }
+
+  .status-tab-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 800;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: 999px;
+    box-sizing: border-box;
+  }
+
+  .status-tab-btn[data-status=""] {
+    grid-column: 1 / -1;
+  }
+
+  .toast-container {
+    left: 16px;
+    right: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    align-items: center;
+  }
+
+  .toast {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints: Mobile Specific (<= 540px)
+   Refined cards, ergonomic touch targets and proportional hierarchy
+   ========================================================================== */
+
+@media (max-width: 540px) {
+  .booking-card {
+    padding: 14px;
+    border-radius: 18px;
+    gap: 14px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .booking-card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding-bottom: 12px;
+  }
+
+  .booking-card-header-left {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .pill-time,
+  .pill-date {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 12px;
+    min-height: 34px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pill-status {
+    display: inline-flex;
+    align-self: flex-start;
+    min-height: 28px;
+    padding: 4px 12px;
+    font-size: 11px;
+    box-sizing: border-box;
+  }
+
+  .booking-service-block {
+    gap: 6px;
+  }
+
+  .booking-service-title {
+    font-size: 16px;
+  }
+
+  .booking-service-meta-row {
+    gap: 6px 8px;
+  }
+
+  .meta-chip {
+    font-size: 11.5px;
+  }
+
+  .booking-client-block {
+    padding: 12px;
+    border-radius: 14px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    gap: 10px;
+  }
+
+  .client-identity-row {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .client-avatar-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .client-info-names {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .client-primary-name {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+  }
+
+  .client-email-sub {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+  }
+
+  .client-contacts-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .client-phone-pill,
+  .btn-whatsapp-direct {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    min-height: 38px;
+    padding: 6px 10px;
+    font-size: 11.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .booking-notes-block {
+    padding: 12px;
+    border-radius: 14px;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .notes-identity-row {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .notes-avatar-circle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .notes-avatar-circle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .notes-primary-label {
+    font-size: 13.5px;
+  }
+
+  .notes-email-sub {
+    font-size: 11px;
+  }
+
+  .notes-bubble-row {
+    padding: 8px 12px;
+  }
+
+  .notes-body-quote {
+    font-size: 12px;
+  }
+
+  .booking-card-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding-top: 12px;
+  }
+
+  .btn-action-attended {
+    grid-column: 1;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+  }
+
+  .btn-action-noshow {
+    grid-column: 2;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+  }
+
+  .btn-action-cancel {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+  }
+
+  .btn-action-pill {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 8px 6px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints: Extra Small Devices (<= 380px)
+   ========================================================================== */
+
+@media (max-width: 380px) {
+  .turnos-shell {
+    padding-left: max(17px, calc(env(safe-area-inset-left) + 5px));
+    padding-right: max(17px, calc(env(safe-area-inset-right) + 5px));
+  }
+
+  .client-contacts-row {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-card-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-action-attended,
+  .btn-action-noshow,
+  .btn-action-cancel {
+    grid-column: 1;
+  }
+}

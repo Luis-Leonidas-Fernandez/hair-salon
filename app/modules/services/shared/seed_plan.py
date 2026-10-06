@@ -44,7 +44,7 @@ BASE_WEEKLY_SCHEDULE = WeeklySchedule(
 
 EXPECTED_SEED_ROLE_COUNTS: dict[InternalRole, int] = {
     InternalRole.ADMIN: 1,
-    InternalRole.PELUQUERO: 2,
+    InternalRole.PELUQUERO: 3,
 }
 
 
@@ -65,6 +65,11 @@ def build_seed_identities(settings: Settings) -> tuple[SeedIdentity, ...]:
         SeedIdentity(
             display_name=settings.seed_hairdresser_2_name,
             email=settings.seed_hairdresser_2_email,
+            expected_role=InternalRole.PELUQUERO,
+        ),
+        SeedIdentity(
+            display_name=settings.seed_hairdresser_3_name,
+            email=settings.seed_hairdresser_3_email,
             expected_role=InternalRole.PELUQUERO,
         ),
     )

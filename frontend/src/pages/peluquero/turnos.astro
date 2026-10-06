@@ -1,0 +1,548 @@
+---
+import '../../styles/global.css';
+import '../../styles/peluquero-turnos.css';
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Agenda y turnos asignados para profesionales de After Look." />
+    <title>Agenda de Turnos / After Look</title>
+  </head>
+  <body class="turnos-page">
+    <div class="turnos-shell">
+      <!-- Topbar Navigation (matching reservas topbar) -->
+      <nav class="turnos-topbar" aria-label="Navegación de agenda">
+        <div class="turnos-nav-left">
+          <a class="turnos-brand" href="/" aria-label="After Look">After Look</a>
+        </div>
+        <div class="turnos-nav-right">
+          <div class="stylist-session-pill">
+            <div class="stylist-avatar-mini" id="stylist-avatar-initials">P</div>
+            <span class="stylist-greeting-text" id="hairdresser-greeting">
+              Cargando...
+            </span>
+          </div>
+          <button id="logout-btn" type="button" class="btn-logout" aria-label="Cerrar sesión">
+            Salir
+          </button>
+        </div>
+      </nav>
+
+      <!-- Hero Section -->
+      <header class="turnos-hero">
+        <p class="turnos-kicker">Panel Profesional</p>
+        <h1 class="turnos-title">Agenda & Turnos</h1>
+        <p class="turnos-subtitle">
+          Revisá tus turnos asignados, contactá a tus clientes por WhatsApp y actualizá el estado de cada servicio en tiempo real.
+        </p>
+      </header>
+
+      <!-- Metrics Banner (matching reservas glassmorphism cards) -->
+      <section class="metrics-strip" aria-label="Métricas del día">
+        <article class="metric-card">
+          <div class="metric-card-top">
+            <span class="metric-card-label">Turnos Hoy</span>
+            <span class="metric-icon-bubble" aria-hidden="true">⏱</span>
+          </div>
+          <span class="metric-card-value" id="metric-total">0</span>
+        </article>
+        <article class="metric-card confirmed">
+          <div class="metric-card-top">
+            <span class="metric-card-label">Confirmados</span>
+            <span class="metric-icon-bubble" aria-hidden="true">✦</span>
+          </div>
+          <span class="metric-card-value" id="metric-confirmed">0</span>
+        </article>
+        <article class="metric-card attended">
+          <div class="metric-card-top">
+            <span class="metric-card-label">Asistieron</span>
+            <span class="metric-icon-bubble" aria-hidden="true">✓</span>
+          </div>
+          <span class="metric-card-value" id="metric-attended">0</span>
+        </article>
+        <article class="metric-card noshow">
+          <div class="metric-card-top">
+            <span class="metric-card-label">Ausentes / Cancel</span>
+            <span class="metric-icon-bubble" aria-hidden="true">✗</span>
+          </div>
+          <span class="metric-card-value" id="metric-noshow">0</span>
+        </article>
+      </section>
+
+      <!-- Filter Controls Bar -->
+      <section class="filter-panel" aria-label="Filtros de reservas">
+        <div class="filter-row">
+          <div class="date-selector-box">
+            <span class="date-selector-label">Fecha:</span>
+            <div class="date-input-wrap">
+              <input type="date" id="filter-date" class="date-input-styled" />
+            </div>
+            <button type="button" id="btn-today" class="date-quick-btn active">Hoy</button>
+            <button type="button" id="btn-clear-date" class="date-quick-btn">Todas</button>
+          </div>
+
+          <div class="status-selector-box">
+            <span class="status-selector-label">Estado:</span>
+            <div class="status-tabs-wrap" role="tablist" aria-label="Filtro por estado">
+              <button type="button" class="status-tab-btn active" data-status="">Todos</button>
+              <button type="button" class="status-tab-btn" data-status="CONFIRMADA">Confirmadas</button>
+              <button type="button" class="status-tab-btn" data-status="ASISTIO">Asistió</button>
+              <button type="button" class="status-tab-btn" data-status="NO_ASISTIO">No Asistió</button>
+              <button type="button" class="status-tab-btn" data-status="CANCELADA">Canceladas</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bookings Grid Container -->
+      <main class="bookings-grid" id="bookings-container" aria-label="Listado de turnos">
+        <div class="turnos-empty-state">
+          <div class="turnos-empty-icon" aria-hidden="true">⏱</div>
+          <h3>Cargando turnos...</h3>
+          <p>Consultando la base de datos de After Look.</p>
+        </div>
+      </main>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <script>
+      interface HairdresserBookingClient {
+        id: number;
+        nombre: string;
+        telefono: string | null;
+        whatsapp: string | null;
+        email: string;
+      }
+
+      interface HairdresserBooking {
+        id: number;
+        cliente: HairdresserBookingClient;
+        servicio_id: number;
+        servicio_nombre: string;
+        tipo_servicio: string;
+        duracion_minutos: number;
+        precio_estimado: string;
+        fecha_inicio: string;
+        fecha_fin: string;
+        estado: string;
+        canal_reserva: string;
+        notas_cliente: string | null;
+        created_at: string;
+      }
+
+      let allBookings: HairdresserBooking[] = [];
+      let currentDateFilter: string = new Date().toISOString().slice(0, 10);
+      let currentStatusFilter: string = "";
+
+      // Toast notification helper
+      function showToast(message: string, isError = false) {
+        const container = document.getElementById("toast-container");
+        if (!container) return;
+        const toast = document.createElement("div");
+        toast.className = `toast ${isError ? "toast-error" : "toast-success"}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.remove();
+        }, 3500);
+      }
+
+      // Format ISO string to Argentine local time & date
+      function formatTime(isoStr: string): string {
+        const d = new Date(isoStr);
+        return (
+          d.toLocaleTimeString("es-AR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }) + " hs"
+        );
+      }
+
+      function formatDate(isoStr: string): string {
+        const d = new Date(isoStr);
+        return d.toLocaleDateString("es-AR", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+        });
+      }
+
+      // Format WhatsApp international link with clean greeting
+      function getWhatsAppLink(phone: string | null, clientName: string): string | null {
+        if (!phone) return null;
+        const clean = phone.replace(/\D/g, "");
+        if (!clean) return null;
+        const message = encodeURIComponent(`¡Hola ${clientName}! Te escribo desde After Look sobre tu turno.`);
+        return `https://wa.me/${clean}?text=${message}`;
+      }
+
+      // Initials helper
+      function getInitials(name: string): string {
+        if (!name) return "CL";
+        const parts = name.trim().split(/\s+/);
+        if (parts.length >= 2) {
+          return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        return name.slice(0, 2).toUpperCase();
+      }
+
+      // Status badge CSS helper
+      function getStatusClass(status: string): string {
+        const s = status.toLowerCase();
+        if (s === "confirmada") return "confirmada";
+        if (s === "asistio") return "asistio";
+        if (s === "no_asistio") return "no_asistio";
+        if (s === "cancelada") return "cancelada";
+        return "confirmada";
+      }
+
+      // Status friendly label
+      function getStatusLabel(status: string): string {
+        if (status === "CONFIRMADA") return "Confirmada";
+        if (status === "ASISTIO") return "Asistió";
+        if (status === "NO_ASISTIO") return "No Asistió";
+        if (status === "CANCELADA") return "Cancelada";
+        return status;
+      }
+
+      // Calculate and update metrics
+      function updateMetrics(bookings: HairdresserBooking[]) {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const todayBookings = bookings.filter((b) => b.fecha_inicio.startsWith(todayStr));
+
+        const totalEl = document.getElementById("metric-total");
+        const confirmedEl = document.getElementById("metric-confirmed");
+        const attendedEl = document.getElementById("metric-attended");
+        const noShowEl = document.getElementById("metric-noshow");
+
+        if (totalEl) totalEl.textContent = String(todayBookings.length);
+        if (confirmedEl)
+          confirmedEl.textContent = String(
+            todayBookings.filter((b) => b.estado === "CONFIRMADA").length
+          );
+        if (attendedEl)
+          attendedEl.textContent = String(
+            todayBookings.filter((b) => b.estado === "ASISTIO").length
+          );
+        if (noShowEl)
+          noShowEl.textContent = String(
+            todayBookings.filter((b) => b.estado === "NO_ASISTIO" || b.estado === "CANCELADA").length
+          );
+      }
+
+      // Fetch bookings from backend
+      async function loadBookings() {
+        const container = document.getElementById("bookings-container");
+        if (!container) return;
+
+        let url = "/api/booking/hairdresser/my";
+        const params = new URLSearchParams();
+        if (currentDateFilter) params.append("fecha", currentDateFilter);
+        if (currentStatusFilter) params.append("estado", currentStatusFilter);
+
+        const qs = params.toString();
+        if (qs) url += `?${qs}`;
+
+        try {
+          const res = await fetch(url);
+          if (!res.ok) {
+            showToast("Error al cargar turnos del salón", true);
+            return;
+          }
+          allBookings = await res.json();
+          renderBookings(allBookings);
+          // Always calculate metrics against full today bookings
+          const resAll = await fetch("/api/booking/hairdresser/my");
+          if (resAll.ok) {
+            const all = await resAll.json();
+            updateMetrics(all);
+          }
+        } catch {
+          showToast("Error de conexión al cargar turnos", true);
+        }
+      }
+
+      // Render bookings cards
+      function renderBookings(bookings: HairdresserBooking[]) {
+        const container = document.getElementById("bookings-container");
+        if (!container) return;
+
+        if (bookings.length === 0) {
+          container.innerHTML = `
+            <div class="turnos-empty-state">
+              <div class="turnos-empty-icon" aria-hidden="true">✦</div>
+              <h3>No hay turnos registrados</h3>
+              <p>No se encontraron citas para la fecha y filtro seleccionados.</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = bookings
+          .map((b) => {
+            const timeStr = formatTime(b.fecha_inicio);
+            const dateStr = formatDate(b.fecha_inicio);
+            const waPhone = b.cliente.whatsapp || b.cliente.telefono;
+            const waLink = getWhatsAppLink(waPhone, b.cliente.nombre);
+            const statusClass = getStatusClass(b.estado);
+            const statusLabel = getStatusLabel(b.estado);
+            const initials = getInitials(b.cliente.nombre);
+
+            const isAttended = b.estado === "ASISTIO";
+            const isNoShow = b.estado === "NO_ASISTIO";
+            const isCancelled = b.estado === "CANCELADA";
+
+            return `
+              <article class="booking-card" id="booking-card-${b.id}">
+                <!-- Header: Horario, Fecha y Estado -->
+                <div class="booking-card-header">
+                  <div class="booking-card-header-left">
+                    <span class="pill-time">⏱ ${timeStr}</span>
+                    <span class="pill-date">📅 ${dateStr}</span>
+                  </div>
+                  <span class="pill-status ${statusClass}">${statusLabel}</span>
+                </div>
+
+                <!-- Body: Servicio y Datos del Cliente -->
+                <div class="booking-card-body">
+                  <!-- Bloque Servicio -->
+                  <div class="booking-service-block">
+                    <h3 class="booking-service-title">${b.servicio_nombre}</h3>
+                    <div class="booking-service-meta-row">
+                      <span class="meta-chip">⏱ ${b.duracion_minutos} min</span>
+                      <span class="meta-chip price">$${Number(b.precio_estimado).toLocaleString("es-AR")}</span>
+                      <span class="meta-chip">✦ ${b.tipo_servicio}</span>
+                    </div>
+                  </div>
+
+                  <!-- Bloque Cliente -->
+                  <div class="booking-client-block">
+                    <div class="client-identity-row">
+                      <div class="client-avatar-circle" aria-hidden="true">${initials}</div>
+                      <div class="client-info-names">
+                        <span class="client-primary-name">${b.cliente.nombre}</span>
+                        <span class="client-email-sub">${b.cliente.email}</span>
+                      </div>
+                    </div>
+                    <div class="client-contacts-row">
+                      ${
+                        b.cliente.telefono
+                          ? `<a href="tel:${b.cliente.telefono.replace(/\D/g, "")}" class="client-phone-pill" title="Llamar al cliente">📞 ${b.cliente.telefono}</a>`
+                          : ""
+                      }
+                      ${
+                        waLink
+                          ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" title="Abrir chat de WhatsApp">
+                              <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.4-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.53.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.11-.23-.17-.48-.3z"/>
+                              </svg>
+                              <span>WhatsApp</span>
+                            </a>`
+                          : ""
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Subcard: Indicación del cliente (diseño armónico con booking-client-block) -->
+                  ${
+                    b.notas_cliente
+                      ? `<div class="booking-notes-block">
+                          <div class="notes-identity-row">
+                            <div class="notes-avatar-circle" aria-hidden="true">
+                              <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                              </svg>
+                            </div>
+                            <div class="notes-info-headings">
+                              <span class="notes-primary-label">Indicación del Cliente</span>
+                              <span class="notes-email-sub">Instrucción o preferencia para el servicio</span>
+                            </div>
+                          </div>
+                          <div class="notes-bubble-row">
+                            <p class="notes-body-quote">“${b.notas_cliente}”</p>
+                          </div>
+                        </div>`
+                      : ""
+                  }
+                </div>
+
+                <!-- Footer: Botones de Acción Operativa del Peluquero -->
+                <div class="booking-card-footer">
+                  <button
+                    type="button"
+                    class="btn-action-pill btn-action-attended"
+                    data-action="ASISTIO"
+                    data-id="${b.id}"
+                    ${isAttended || isCancelled ? "disabled" : ""}
+                    title="Marcar que el cliente asistió al salón"
+                  >
+                    <span>✓</span> Asistió
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-action-pill btn-action-noshow"
+                    data-action="NO_ASISTIO"
+                    data-id="${b.id}"
+                    ${isNoShow || isCancelled ? "disabled" : ""}
+                    title="Marcar que el cliente no se presentó"
+                  >
+                    <span>✗</span> No asistió
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-action-pill btn-action-cancel"
+                    data-action="CANCELADA"
+                    data-id="${b.id}"
+                    ${isCancelled ? "disabled" : ""}
+                    title="Cancelar este turno"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </article>
+            `;
+          })
+          .join("");
+
+        // Attach action handlers
+        container.querySelectorAll<HTMLButtonElement>(".btn-action-pill").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const bookingId = btn.dataset.id;
+            const newStatus = btn.dataset.action;
+            if (!bookingId || !newStatus) return;
+
+            btn.disabled = true;
+            try {
+              const res = await fetch(`/api/booking/hairdresser/bookings/${bookingId}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  estado: newStatus,
+                  motivo: `Actualizado por peluquero a ${newStatus}`,
+                }),
+              });
+
+              if (res.ok) {
+                showToast(`Turno #${bookingId} marcado como ${getStatusLabel(newStatus)}`);
+                await loadBookings();
+              } else {
+                const errData = await res.json().catch(() => ({}));
+                showToast(errData.detail || "Error al actualizar estado", true);
+                btn.disabled = false;
+              }
+            } catch {
+              showToast("Error de conexión al actualizar turno", true);
+              btn.disabled = false;
+            }
+          });
+        });
+      }
+
+      // Initial auth & setup
+      async function init() {
+        const greetingEl = document.getElementById("hairdresser-greeting");
+        const avatarEl = document.getElementById("stylist-avatar-initials");
+        const logoutBtn = document.getElementById("logout-btn");
+        const dateInput = document.getElementById("filter-date") as HTMLInputElement;
+        const btnToday = document.getElementById("btn-today");
+        const btnClearDate = document.getElementById("btn-clear-date");
+
+        // 1. Session verification
+        try {
+          const res = await fetch("/auth/me");
+          if (!res.ok) {
+            window.location.href = "/registro/";
+            return;
+          }
+          const user = await res.json();
+          if (user.actor_type === "cliente") {
+            window.location.href = "/reservas/";
+            return;
+          }
+
+          if (greetingEl) {
+            greetingEl.innerHTML = `Hola, <strong>${user.nombre}</strong>`;
+          }
+          if (avatarEl) {
+            avatarEl.textContent = getInitials(user.nombre);
+          }
+        } catch {
+          window.location.href = "/registro/";
+          return;
+        }
+
+        // 2. Setup Logout
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", async () => {
+            try {
+              await fetch("/auth/logout", { method: "POST" });
+            } finally {
+              window.location.href = "/registro/";
+            }
+          });
+        }
+
+        // 3. Setup Date Filters
+        const todayStr = new Date().toISOString().slice(0, 10);
+        if (dateInput) {
+          dateInput.value = todayStr;
+          dateInput.addEventListener("change", () => {
+            currentDateFilter = dateInput.value;
+            if (dateInput.value === todayStr) {
+              btnToday?.classList.add("active");
+              btnClearDate?.classList.remove("active");
+            } else if (!dateInput.value) {
+              btnClearDate?.classList.add("active");
+              btnToday?.classList.remove("active");
+            } else {
+              btnToday?.classList.remove("active");
+              btnClearDate?.classList.remove("active");
+            }
+            loadBookings();
+          });
+        }
+
+        if (btnToday && dateInput) {
+          btnToday.addEventListener("click", () => {
+            dateInput.value = todayStr;
+            currentDateFilter = todayStr;
+            btnToday.classList.add("active");
+            btnClearDate?.classList.remove("active");
+            loadBookings();
+          });
+        }
+
+        if (btnClearDate && dateInput) {
+          btnClearDate.addEventListener("click", () => {
+            dateInput.value = "";
+            currentDateFilter = "";
+            btnClearDate.classList.add("active");
+            btnToday?.classList.remove("active");
+            loadBookings();
+          });
+        }
+
+        // 4. Setup Status Filter Tabs
+        document.querySelectorAll<HTMLButtonElement>(".status-tab-btn[data-status]").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            document.querySelectorAll(".status-tab-btn[data-status]").forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
+            currentStatusFilter = tab.dataset.status || "";
+            loadBookings();
+          });
+        });
+
+        // 5. Initial load
+        await loadBookings();
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

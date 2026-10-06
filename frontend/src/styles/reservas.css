@@ -46,30 +46,72 @@
   gap: 14px;
 }
 
-.reservas-back,
+.client-avatar-badge {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 30%, rgba(248, 197, 107, .95), rgba(215, 155, 63, .42) 70%), var(--surface);
+  color: var(--accent-ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .45), 0 0 0 1px rgba(248, 197, 107, .3);
+  flex-shrink: 0;
+  user-select: none;
+}
+
 .reservas-home {
   display: inline-flex;
   min-height: 40px;
   align-items: center;
   border-radius: 999px;
-  color: rgba(255, 250, 241, .88);
-  font-size: 13px;
+  color: var(--accent-bright);
+  font-family: var(--font-display);
+  font-size: clamp(17px, 1.8vw, 22px);
   font-weight: 900;
   letter-spacing: .025em;
   text-shadow: 0 2px 16px rgba(0, 0, 0, .65);
 }
 
-.reservas-back {
-  padding: 9px 14px;
-  border: 1px solid rgba(255, 250, 241, .22);
-  background: rgba(3, 4, 11, .45);
-  backdrop-filter: blur(12px);
+.user-session-bar {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.reservas-home {
-  color: var(--accent-bright);
-  font-family: var(--font-display);
-  font-size: clamp(17px, 1.8vw, 22px);
+.client-name-display {
+  font-size: 0.86rem;
+  color: #cbd5e1; /* Elegant slate-300 gray matching the luxury dark palette */
+  font-weight: 600;
+  letter-spacing: .01em;
+  max-width: 170px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .5);
+}
+
+.client-logout-btn {
+  display: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #e2e8f0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all .2s ease;
+}
+
+.client-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(248, 197, 107, 0.35);
+  color: #fff;
 }
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
@@ -516,15 +558,22 @@
 @media (max-width: 360px) {
   .reservas-topbar {
     inset-inline: 14px;
+    gap: 8px;
   }
 
-  .reservas-back {
-    padding-inline: 11px;
-    font-size: 12px;
+  .client-avatar-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .client-name-display {
+    max-width: 95px;
+    font-size: 0.78rem;
   }
 
   .reservas-home {
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .service-figure {
@@ -559,3 +608,274 @@
     gap: 8px;
   }
 }
+
+/* --- CU-003 Interactive Booking Enhancements --- */
+.service-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.service-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 250, 241, .14);
+  border-radius: 16px;
+  background: rgba(255, 250, 241, .045);
+  color: rgba(255, 250, 241, .78);
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.service-card:hover:not(.is-selected) {
+  border-color: rgba(248, 197, 107, .38);
+  background: rgba(255, 250, 241, .08);
+}
+
+.service-card.is-selected {
+  border-color: rgba(248, 197, 107, .74);
+  background: rgba(215, 155, 63, .14);
+  color: var(--fg);
+  box-shadow: 0 0 0 3px rgba(248, 197, 107, .12);
+}
+
+.service-card-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(248, 197, 107, .12);
+  color: var(--accent-bright);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.service-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.service-card-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.service-card-meta {
+  font-size: 11px;
+  color: rgba(255, 250, 241, .55);
+}
+
+.stylist-card {
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.stylist-card:hover:not(.is-selected) {
+  border-color: rgba(248, 197, 107, .35);
+  background: rgba(255, 250, 241, .08);
+}
+
+.date-chip {
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.date-chip:hover:not(.is-selected) {
+  border-color: rgba(248, 197, 107, .35);
+  background: rgba(255, 250, 241, .08);
+}
+
+.time-pill:not(.is-muted) {
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.time-pill:hover:not(.is-muted):not(.is-selected) {
+  border-color: rgba(248, 197, 107, .35);
+  background: rgba(255, 250, 241, .08);
+  color: #fff;
+}
+
+.booking-notes-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.booking-notes-input {
+  width: 100%;
+  min-height: 52px;
+  max-height: 100px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 250, 241, .14);
+  background: rgba(255, 250, 241, .04);
+  color: #fff;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.booking-notes-input:focus {
+  outline: none;
+  border-color: rgba(248, 197, 107, .7);
+  box-shadow: 0 0 0 3px rgba(248, 197, 107, .12);
+}
+
+.booking-summary-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(248, 197, 107, .2);
+  background: rgba(215, 155, 63, .07);
+  font-size: 13px;
+  color: rgba(255, 250, 241, .85);
+}
+
+.booking-summary-strip strong {
+  color: var(--accent-bright);
+}
+
+.booking-cta:not(:disabled) {
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+
+.booking-cta:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 48px rgba(215, 155, 63, .38), inset 0 1px 0 rgba(255, 255, 255, .45);
+}
+
+.booking-cta:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+/* Modal de confirmación exitosa */
+.booking-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(3, 4, 11, .85);
+  backdrop-filter: blur(14px);
+  animation: fadeIn .25s ease;
+}
+
+.booking-modal-card {
+  width: min(100%, 460px);
+  padding: clamp(24px, 4vw, 36px);
+  border-radius: 24px;
+  border: 1px solid rgba(248, 197, 107, .32);
+  background: linear-gradient(165deg, rgba(25, 26, 35, .98), rgba(8, 9, 14, .99));
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .8), 0 0 60px rgba(215, 155, 63, .12);
+  text-align: center;
+  animation: scaleUp .25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-icon-badge {
+  display: inline-grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(248, 197, 107, .16);
+  color: var(--accent-bright);
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.2vw, 26px);
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.modal-lede {
+  font-size: 14px;
+  color: rgba(255, 250, 241, .75);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.modal-details-list {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  margin: 0 0 24px;
+  border-radius: 14px;
+  background: rgba(255, 250, 241, .04);
+  border: 1px solid rgba(255, 250, 241, .1);
+  text-align: left;
+}
+
+.modal-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.modal-detail-row span:first-child {
+  color: rgba(255, 250, 241, .6);
+}
+
+.modal-detail-row strong {
+  color: #fff;
+}
+
+.modal-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.modal-btn-primary {
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--gold-metal);
+  color: var(--accent-ink);
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+
+.modal-btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+.modal-btn-secondary {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(255, 250, 241, .2);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 250, 241, .8);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+

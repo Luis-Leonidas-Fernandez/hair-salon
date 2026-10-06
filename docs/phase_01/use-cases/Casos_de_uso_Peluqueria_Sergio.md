@@ -41,6 +41,7 @@ Este documento describe cómo interactúan los actores con el sistema durante el
 | Precondición | El cliente tiene una cuenta de Google válida. |
 | Disparador | El cliente inicia el flujo de reserva o entra a su cuenta. |
 | Resultado esperado | El sistema identifica al cliente por email de Google. |
+| Estado implementación | **Implementado y verificado (v1.4)** (`/auth/google/start`, `/auth/google/callback`) |
 
 ### Flujo principal
 
@@ -64,6 +65,7 @@ Este documento describe cómo interactúan los actores con el sistema durante el
 | Objetivo | Registrar datos mínimos para operar reservas. |
 | Precondición | El cliente ingresó con Google. |
 | Resultado esperado | El cliente queda con datos completos. |
+| Estado implementación | **Implementado y verificado (v1.4)** (`/completar-perfil`, `POST /auth/complete-profile`) |
 
 ### Flujo principal
 
@@ -86,6 +88,7 @@ Este documento describe cómo interactúan los actores con el sistema durante el
 | Objetivo | Crear una reserva válida sin solapamientos. |
 | Precondición | Cliente autenticado y con datos completos. |
 | Resultado esperado | Reserva registrada, historial inicial creado y sincronización derivada programada. |
+| Estado implementación | **Implementado y verificado (v1.4)** (`/api/booking/reserve`, `/reservas/`, `BookingHistory`) |
 
 ### Flujo principal
 
@@ -253,6 +256,7 @@ Este documento describe cómo interactúan los actores con el sistema durante el
 | Objetivo | Ver los turnos propios. |
 | Precondición | El peluquero está autenticado. |
 | Resultado esperado | El peluquero ve su agenda por fecha y estado. |
+| Estado implementación | **Implementado y verificado (v1.4)** (`/peluquero/turnos/`, `GET /api/booking/hairdresser/my`) |
 
 ### Flujo principal
 
@@ -274,6 +278,7 @@ Este documento describe cómo interactúan los actores con el sistema durante el
 | Objetivo | Reflejar el estado operativo real del turno. |
 | Precondición | La reserva existe. |
 | Resultado esperado | Estado actualizado e historial registrado. |
+| Estado implementación | **Implementado y verificado (v1.4)** (`PATCH /api/booking/hairdresser/bookings/{id}/status`, `BookingHistory`) |
 
 ### Flujo principal
 

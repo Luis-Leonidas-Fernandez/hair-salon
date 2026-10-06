@@ -32,7 +32,7 @@ La primera versión debe resolver el flujo principal de reserva antes de incorpo
 | Duración de turno | Sí | Atención base de 60 minutos. |
 | Bloques de agenda | Sí | Disponibilidad organizada en bloques de 30 minutos. |
 | Horario de atención | Sí | Lunes a sábado, de 9:30 a 22:00. |
-| Dos profesionales | Sí | Dos peluqueros/profesionales atendiendo en paralelo. |
+| Profesionales | Sí | Hasta tres peluqueros/profesionales atendiendo en paralelo (actualizado según seed plan). |
 | Elección de peluquero | Sí | El cliente puede elegir peluquero. |
 | Consulta de disponibilidad | Sí | Por servicio, peluquero y fecha. |
 | Reserva web | Sí | Cliente reserva desde el sistema. |

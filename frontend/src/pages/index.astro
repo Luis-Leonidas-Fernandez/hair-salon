@@ -1,83 +1,6 @@
 ---
 import '../styles/global.css';
-
-const serviceCards = [
-  {
-    title: 'Corte y forma',
-    eyebrow: 'Corte',
-    image: '/images/service-cut.png',
-    alt: 'Barbero realizando un corte con tijera en un salón oscuro, imagen ilustrativa',
-    copy: 'Cortes prolijos, degradados y terminaciones pensadas para tu rutina diaria.'
-  },
-  {
-    title: 'Barba y perfilado',
-    eyebrow: 'Barba',
-    image: '/images/service-beard.png',
-    alt: 'Barbero perfilando una barba con máquina, imagen ilustrativa',
-    copy: 'Líneas limpias, mantenimiento de volumen y acabado cuidado para barba corta o larga.'
-  },
-  {
-    title: 'Peinado y estilo',
-    eyebrow: 'Estilo',
-    image: '/images/service-style.png',
-    alt: 'Profesional peinando cabello con rulos en salón, imagen ilustrativa',
-    copy: 'Terminación, brushing y definición para salir del salón con el look resuelto.'
-  }
-];
-
-const benefits = [
-  ['Atención dedicada', 'Cada turno se trabaja con foco en el resultado, sin apurar la consulta previa.'],
-  ['Criterio profesional', 'Recomendaciones claras según tipo de pelo, forma de rostro y mantenimiento real.'],
-  ['Terminación cuidada', 'Detalles finales, contornos y acabado para que el corte se vea bien fuera del salón.']
-];
-
-const menuItems = [
-  {
-    title: 'Corte clásico o moderno',
-    items: ['Diagnóstico breve', 'Corte con tijera o máquina', 'Terminación y peinado'],
-  },
-  {
-    title: 'Barba y contornos',
-    items: ['Perfilado de barba', 'Líneas de cuello y mejillas', 'Acondicionado final'],
-  },
-  {
-    title: 'Color y mantenimiento',
-    items: ['Consulta de tono', 'Retoque o renovación', 'Cuidado posterior sugerido'],
-  },
-  {
-    title: 'Peinado y preparación',
-    items: ['Brushing o definición', 'Producto de terminación', 'Look para ocasión especial'],
-  }
-];
-
-const introItems = [
-  {
-    title: 'Consulta',
-    label: 'Antes del corte',
-    copy: 'Arrancamos escuchando qué buscás y cuánto mantenimiento querés sostener. La idea es ajustar el servicio a tu pelo, tu rutina y tu estilo real.'
-  },
-  {
-    title: 'Detalle',
-    label: 'Contornos y terminación',
-    copy: 'Se revisan líneas, volumen, nuca y patillas para que el resultado cierre bien. Los detalles finales son parte del corte, no un extra.'
-  },
-  {
-    title: 'Cuidado',
-    label: 'Recomendación posterior',
-    copy: 'Si el look necesita producto, secado o mantenimiento, te lo explicamos de forma simple. Sin prometer resultados iguales para todos los tipos de pelo.'
-  },
-  {
-    title: 'Turno',
-    label: 'Consultar disponibilidad',
-    copy: 'La disponibilidad y los valores se confirman directamente con el salón. Este sitio funciona como vista visual e informativa, no como sistema de reservas.'
-  }
-];
-
-const journalCards = [
-  ['Guía breve', 'Cómo pedir un corte sin perder tu estilo', 'Traé una referencia, pero también contá cuánto tiempo querés dedicarle al mantenimiento.'],
-  ['Cuidado', 'Barba prolija entre turnos', 'El secreto está en limpiar contornos y usar poco producto, bien distribuido.'],
-  ['Estilo', 'Peinados que resisten el día', 'La terminación correcta depende más de la preparación del pelo que de la cantidad de fijador.']
-];
+import '../styles/registro.css';
 ---
 
 <!doctype html>
@@ -85,187 +8,73 @@ const journalCards = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Sitio visual de Peluquería Sergio / After Look con servicios de corte, barba, estilo y cuidado personal." />
-    <title>Peluquería Sergio / After Look</title>
+    <meta name="description" content="Accedé a After Look con tu cuenta de Google. Reservá turnos exclusivos y gestioná tus citas con una experiencia ágil y personalizada." />
+    <title>Registro con Google / After Look</title>
   </head>
-  <body>
-    <div class="outer-shell">
-      <div class="site-frame">
-        <header class="site-header" aria-label="Navegación principal">
-          <a class="brand" href="#top" aria-label="Peluquería Sergio inicio">After Look</a>
-          <nav class="nav-links" aria-label="Secciones">
-            <a href="#servicios">Servicios</a>
-            <a href="#beneficios">Experiencia</a>
-            <a href="#galeria">Galería</a>
-            <a href="#contacto">Contacto</a>
-          </nav>
-          <a class="nav-cta" href="/registro">Reservar</a>
-        </header>
+  <body class="registro-page">
+    <main class="registro-shell" aria-labelledby="registro-title">
+      <section class="registro-photo-panel" aria-label="Imagen editorial del salón">
+        <img src="/images/hero-barber.png" alt="Barbero trabajando en un salón oscuro, imagen ilustrativa" />
+        <div class="registro-mobile-overlay" aria-hidden="true"></div>
+        <a class="registro-brand" href="/" aria-label="Volver al inicio de After Look">After Look</a>
+        <div class="registro-photo-caption" aria-hidden="true">
+          <span></span>
+          <p>Experiencia After Look</p>
+        </div>
+      </section>
 
-        <main id="top">
-          <section class="hero section-pad" aria-labelledby="hero-title">
-            <div class="hero-copy">
-              <div class="hero-ornament" aria-hidden="true">
-                <span></span>
-                <svg viewBox="0 0 32 32" focusable="false" aria-hidden="true">
-                  <path d="M16 3.5 19.4 12.6 28.5 16 19.4 19.4 16 28.5 12.6 19.4 3.5 16 12.6 12.6 16 3.5Z" />
-                  <path d="M16 10.5 17.55 14.45 21.5 16 17.55 17.55 16 21.5 14.45 17.55 10.5 16 14.45 14.45 16 10.5Z" />
-                </svg>
-                <span></span>
-              </div>
-              <h1 id="hero-title">Donde el corte se encuentra con la <span>confianza</span></h1>
-            </div>
-            <figure class="hero-photo">
-              <img src="/images/hero-barber.png" alt="Barbero cortando el cabello de un cliente en un salón oscuro, imagen ilustrativa" />
-              <div class="hero-card" aria-label="Resumen de atención">
-                <p>Atención personalizada para corte, barba y estilo.</p>
-                <a href="#contacto">Consultar turno</a>
-              </div>
-            </figure>
-          </section>
+      <section class="registro-content-panel">
+        <div class="registro-copy">
+          <p class="registro-kicker">Acceso exclusivo</p>
+          <h1 id="registro-title">Ingresá a After Look con tu cuenta de Google.</h1>
+          <p class="registro-lede">Conectate en segundos para reservar tu próximo turno, elegir a tu profesional preferido y disfrutar de una atención de primer nivel diseñada a tu medida.</p>
+        </div>
 
-          <section class="intro section-pad" aria-labelledby="intro-title">
-            <div>
-              <p class="eyebrow">Más que pasar por la silla</p>
-              <h2 id="intro-title">Una experiencia pensada para salir prolijo, cómodo y con un look que puedas sostener.</h2>
-            </div>
-            <div class="intro-copy">
-              <p>Buscamos entender qué querés, cuánto mantenimiento preferís y qué estilo se adapta a tu rutina. Los valores se confirman al consultar.</p>
-              <a class="pill-link" href="#servicios">Ver servicios</a>
-            </div>
-            <div class="proof-grid" aria-label="Puntos de trabajo del salón">
-              {introItems.map((item) => (
-                <article class="intro-card">
-                  <p>{item.label}</p>
-                  <h3>{item.title}</h3>
-                  <span>{item.copy}</span>
-                </article>
-              ))}
-            </div>
-          </section>
+        <div class="registro-action-card" aria-label="Acceso seguro con Google">
+          <a class="google-register-button" href="/auth/google/start?source=web" id="google-auth-btn">
+            <svg class="google-mark" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+              <path fill="#4285F4" d="M23.52 12.27c0-.82-.07-1.6-.2-2.36H12v4.46h6.47a5.54 5.54 0 0 1-2.4 3.64v2.98h3.88c2.27-2.1 3.57-5.19 3.57-8.72Z" />
+              <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.91l-3.88-2.98c-1.08.72-2.45 1.14-4.07 1.14-3.13 0-5.78-2.1-6.73-4.94H1.26v3.08A12 12 0 0 0 12 24Z" />
+              <path fill="#FBBC05" d="M5.27 14.31A7.2 7.2 0 0 1 4.89 12c0-.8.14-1.58.38-2.31V6.61H1.26A12 12 0 0 0 0 12c0 1.93.46 3.76 1.26 5.39l4.01-3.08Z" />
+              <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.44-3.43A11.54 11.54 0 0 0 12 0 12 12 0 0 0 1.26 6.61l4.01 3.08C6.22 6.85 8.87 4.75 12 4.75Z" />
+            </svg>
+            <span>Continuar con Google</span>
+          </a>
+          <p class="registro-note" id="registro-feedback" role="status" aria-live="polite">Acceso seguro mediante OpenID Connect. Tus datos de reserva están protegidos.</p>
+        </div>
+      </section>
+    </main>
 
-          <section class="signature section-pad" id="servicios" aria-labelledby="signature-title">
-            <h2 id="signature-title">Servicios principales</h2>
-            <div class="service-strip" aria-label="Servicios con fotografía">
-              {serviceCards.map((card) => (
-                <article class="photo-card">
-                  <img src={card.image} alt={card.alt} />
-                  <div>
-                    <p>{card.eyebrow}</p>
-                    <h3>{card.title}</h3>
-                    <span>{card.copy}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
+    <script>
+      const ERROR_MESSAGES: Record<string, string> = {
+        GOOGLE_NOT_CONFIGURED: "El acceso con Google no está configurado en este entorno.",
+        GOOGLE_ACCESS_DENIED: "Se canceló el acceso con Google.",
+        GOOGLE_SESSION_EXPIRED: "La sesión de inicio de sesión venció o no es válida. Intentá nuevamente.",
+        GOOGLE_AUTH_FAILED: "No pudimos validar tu cuenta de Google. Intentá de nuevo.",
+        CLIENT_ACCOUNT_SUSPENDED: "Tu cuenta de cliente está suspendida. Contactá al salón.",
+        STAFF_ACCOUNT_INACTIVE: "La cuenta de empleado se encuentra desactivada.",
+        GOOGLE_UNVERIFIED_EMAIL: "Tu cuenta de Google debe tener un correo electrónico verificado.",
+      };
 
-          <section class="benefits section-pad" id="beneficios" aria-labelledby="benefits-title">
-            <h2 id="benefits-title">Porque merecés un buen resultado</h2>
-            <div class="benefit-frame">
-              {benefits.map(([title, copy], index) => (
-                <article>
-                  <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                  <h3>{title}</h3>
-                  <p>{copy}</p>
-                </article>
-              ))}
-            </div>
-          </section>
+      const params = new URLSearchParams(window.location.search);
+      const authError = params.get("auth_error");
+      const completarDatos = params.get("completar_datos");
+      const feedback = document.getElementById("registro-feedback");
 
-          <section class="work" id="galeria" aria-labelledby="work-title">
-            <div class="gallery-strip" aria-label="Galería visual ilustrativa">
-              <img src="/images/service-cut.png" alt="Detalle de corte con tijera, imagen ilustrativa" />
-              <img src="/images/service-beard.png" alt="Detalle de perfilado de barba, imagen ilustrativa" />
-              <img src="/images/service-style.png" alt="Peinado y definición de cabello, imagen ilustrativa" />
-              <img src="/images/hero-barber.png" alt="Vista amplia de atención en salón, imagen ilustrativa" />
-            </div>
-            <div class="section-pad work-copy">
-              <h2 id="work-title">Un look habla antes que cualquier promesa.</h2>
-              <p>Estas imágenes son ilustrativas y ayudan a mostrar la dirección visual del servicio: cortes limpios, barba cuidada y terminaciones sobrias.</p>
-            </div>
-          </section>
-
-          <section class="menu section-pad" aria-labelledby="menu-title">
-            <p class="eyebrow">Servicios y disponibilidad</p>
-            <h2 id="menu-title">Elegí el tipo de atención que necesitás.</h2>
-            <div class="menu-grid">
-              {menuItems.map((item) => (
-                <article class="menu-card">
-                  <div class="menu-card-head">
-                    <h3>{item.title}</h3>
-                    <span>Consultar disponibilidad</span>
-                  </div>
-                  <ul>
-                    {item.items.map((line) => <li>{line}</li>)}
-                  </ul>
-                  <a href="#contacto">Consultar</a>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section class="journal section-pad" aria-labelledby="journal-title">
-            <div class="journal-head">
-              <h2 id="journal-title">Cuidado y estilo, sin vueltas</h2>
-              <p>Notas breves para orientar la conversación antes del turno. No reemplazan una consulta profesional en el salón.</p>
-            </div>
-            <div class="journal-grid">
-              {journalCards.map(([label, title, copy], index) => (
-                <article class="journal-card">
-                  <img src={index === 0 ? '/images/service-style.png' : index === 1 ? '/images/service-beard.png' : '/images/service-cut.png'} alt="Imagen ilustrativa de peluquería y barbería" />
-                  <div>
-                    <p>{label}</p>
-                    <h3>{title}</h3>
-                    <span>{copy}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section class="social section-pad" aria-labelledby="social-title">
-            <h2 id="social-title">Lo importante es que te vayas conforme.</h2>
-            <div class="social-grid">
-              <article><strong>Escucha primero</strong><p>La idea es entender qué querés lograr antes de tocar tijera o máquina.</p></article>
-              <article><strong>Sin inventar resultados</strong><p>Cada pelo responde distinto. Por eso preferimos explicar posibilidades reales.</p></article>
-              <article><strong>Detalles visibles</strong><p>Terminación, contornos y peinado final hacen que el servicio cierre bien.</p></article>
-            </div>
-          </section>
-        </main>
-
-        <footer class="footer" id="contacto">
-          <img src="/images/hero-barber.png" alt="Barbero trabajando en salón oscuro, imagen ilustrativa" />
-          <div class="footer-overlay">
-            <div>
-              <p class="brand footer-brand">After Look</p>
-              <h2 class="sr-only">Contacto</h2>
-              <div class="footer-ornament" aria-hidden="true">
-                <span></span>
-                <svg viewBox="0 0 40 24" focusable="false" aria-hidden="true">
-                  <path d="M20 2.5 22.7 9.3 29.5 12 22.7 14.7 20 21.5 17.3 14.7 10.5 12 17.3 9.3 20 2.5Z" />
-                  <path d="M20 8.2 21.1 10.9 23.8 12 21.1 13.1 20 15.8 18.9 13.1 16.2 12 18.9 10.9 20 8.2Z" />
-                </svg>
-                <span></span>
-              </div>
-              <p>Para horarios, disponibilidad y consultas, contactá directamente al salón.</p>
-            </div>
-            <aside class="whatsapp-preview" aria-label="Contacto por WhatsApp, maqueta visual no interactiva">
-              <div class="whatsapp-card">
-                <svg class="whatsapp-mark" viewBox="0 0 64 64" focusable="false" aria-hidden="true">
-                  <path class="whatsapp-bubble" d="M32 8.5c-12.46 0-22.58 9.65-22.58 21.55 0 4.13 1.24 8.06 3.45 11.45L10.5 54.7l13.64-3.55A23.7 23.7 0 0 0 32 52.48c12.46 0 22.58-9.65 22.58-21.55S44.46 8.5 32 8.5Z" />
-                  <path class="whatsapp-phone" d="M24.76 20.95c-.52-1.18-1.08-1.2-1.58-1.22h-1.35c-.47 0-1.22.17-1.86.87-.64.7-2.44 2.38-2.44 5.8s2.5 6.73 2.85 7.2c.35.46 4.83 7.71 12.03 10.5 5.99 2.32 7.22 1.86 8.52 1.74 1.31-.11 4.22-1.72 4.82-3.39.59-1.66.59-3.09.41-3.39-.17-.29-.64-.46-1.34-.81-.7-.35-4.15-2.05-4.79-2.28-.64-.23-1.1-.35-1.57.35-.47.7-1.8 2.27-2.21 2.73-.41.47-.81.53-1.51.18-.7-.35-2.95-1.09-5.62-3.46-2.08-1.85-3.48-4.14-3.89-4.84-.41-.7-.04-1.08.31-1.43.31-.31.7-.82 1.05-1.22.35-.41.47-.7.7-1.17.23-.47.12-.88-.06-1.23-.18-.35-1.54-3.78-2.17-5.23Z" />
-                </svg>
-                <div>
-                  <p class="whatsapp-kicker">Contacto por WhatsApp</p>
-                  <button class="whatsapp-cta" type="button" disabled aria-disabled="true">Consultar</button>
-                  <p class="whatsapp-note">Canal pensado para coordinar horarios y disponibilidad con el salón.</p>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </footer>
-      </div>
-    </div>
+      if (authError) {
+        const mensaje = ERROR_MESSAGES[authError] || "Ocurrió un inconveniente al validar con Google.";
+        if (feedback) {
+          feedback.textContent = mensaje;
+          feedback.style.color = "#ff6b6b";
+        }
+        window.history.replaceState(null, "", window.location.pathname);
+      } else if (completarDatos) {
+        if (feedback) {
+          feedback.textContent = "Bienvenido/a. Para completar tu primer turno, te solicitaremos un número de contacto.";
+          feedback.style.color = "#e5c07b";
+        }
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    </script>
   </body>
 </html>

@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+google-oauth-architecture.md
 
 # Python bytecode and caches
 __pycache__/

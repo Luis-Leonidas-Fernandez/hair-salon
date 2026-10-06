@@ -166,9 +166,7 @@ async def seed() -> None:
         for hairdresser in hairdressers:
             await ensure_weekly_availability(session, hairdresser=hairdresser)
             for service in services:
-                await ensure_capability(
-                    session, user=hairdresser, service=service
-                )
+                await ensure_capability(session, user=hairdresser, service=service)
 
 
 if __name__ == "__main__":

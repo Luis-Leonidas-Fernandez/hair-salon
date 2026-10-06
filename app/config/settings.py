@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     seed_hairdresser_1_email: str
     seed_hairdresser_2_name: str
     seed_hairdresser_2_email: str
+    seed_hairdresser_3_name: str = "Peluquero 3"
+    seed_hairdresser_3_email: str = "peluquero3@afterlook.com"
     google_client_id: str | None = None
     google_client_secret: str | None = None
     google_redirect_uri: str | None = None

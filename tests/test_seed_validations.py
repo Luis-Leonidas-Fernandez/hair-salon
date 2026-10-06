@@ -60,6 +60,7 @@ def valid_identities() -> tuple[SeedIdentity, ...]:
         SeedIdentity("Admin", "admin@example.com", InternalRole.ADMIN),
         SeedIdentity("Hairdresser One", "one@example.com", InternalRole.PELUQUERO),
         SeedIdentity("Hairdresser Two", "two@example.com", InternalRole.PELUQUERO),
+        SeedIdentity("Hairdresser Three", "three@example.com", InternalRole.PELUQUERO),
     )
 
 
@@ -87,6 +88,7 @@ def test_rejects_duplicate_seed_emails(
         valid_identities[0],
         SeedIdentity("Hairdresser One", "ADMIN@example.com", InternalRole.PELUQUERO),
         valid_identities[2],
+        valid_identities[3],
     )
 
     with pytest.raises(SeedValidationError, match="emails must be distinct"):

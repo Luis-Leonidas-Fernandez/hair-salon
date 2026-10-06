@@ -25,12 +25,12 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Login con Google | BR-Reservas, MVP-Integraciones, VAL-Login | RF-001 | RNF-SEG-01 | CU-001 | clientes.email_google, clientes.google_sub | ADR-002, ADR-014 | Implementado con tests |
 | Datos del cliente | BR-Reservas, VAL-Datos cliente | RF-002 | RNF-SEG-04 | CU-002 | clientes | ADR-002, ADR-014 | Implementado con tests |
-| Servicios iniciales | BR-Servicios, VAL-Servicios | RF-003, RF-013 | RNF-ESC-02 | CU-003, CU-007 | servicios | ADR-003 | Cubierto |
-| Selección de peluquero | BR-Reservas, VAL-Elección | RF-004 | RNF-USA-01 | CU-003 | reservas.peluquero_id | ADR-003 | Cubierto |
-| Consulta de disponibilidad | BR-Horarios, BR-Prevención | RF-005 | RNF-CON-05 | CU-003, CU-008 | disponibilidades | ADR-001, ADR-003 | Cubierto |
-| Reserva de turno | BR-Reservas, MVP-Entra | RF-006, RF-007, RF-008 | RNF-CON-02 | CU-003 | reservas | ADR-001, ADR-003 | Cubierto |
-| Ventana de reserva | BR-Reservas, MVP-Supuestos | RF-007, RF-008 | RNF-USA-01 | CU-003 | reservas.fecha_inicio | ADR-003 | Cubierto |
-| Prevención de solapamientos | BR-Prevención, MVP-Cierre | RF-025 | RNF-CON-02, RNF-USA-02 | CU-003 | reservas.fecha_fin, exclusión GiST | ADR-001, ADR-003 | Cubierto en PostgreSQL |
+| Servicios iniciales | BR-Servicios, VAL-Servicios | RF-003, RF-013 | RNF-ESC-02 | CU-003, CU-007 | servicios | ADR-003, ADR-015 | Implementado con tests |
+| Selección de peluquero | BR-Reservas, VAL-Elección | RF-004 | RNF-USA-01 | CU-003 | reservas.peluquero_id | ADR-003, ADR-015 | Implementado con tests |
+| Consulta de disponibilidad | BR-Horarios, BR-Prevención | RF-005 | RNF-CON-05 | CU-003, CU-008 | disponibilidades | ADR-001, ADR-003, ADR-015 | Implementado con tests |
+| Reserva de turno | BR-Reservas, MVP-Entra | RF-006, RF-007, RF-008 | RNF-CON-02 | CU-003 | reservas | ADR-001, ADR-003, ADR-015 | Implementado con tests |
+| Ventana de reserva | BR-Reservas, MVP-Supuestos | RF-007, RF-008 | RNF-USA-01 | CU-003 | reservas.fecha_inicio | ADR-003, ADR-015 | Implementado con tests |
+| Prevención de solapamientos | BR-Prevención, MVP-Cierre | RF-025 | RNF-CON-02, RNF-USA-02 | CU-003 | reservas.fecha_fin, exclusión GiST | ADR-001, ADR-003, ADR-012, ADR-015 | Implementado en PostgreSQL y validado |
 | Modificación de turno | BR-Modificación | RF-009 | RNF-CON-03, RNF-CON-04 | CU-004 | reservas, historial_reservas | ADR-003, ADR-005 | Cubierto |
 | Cancelación cliente | BR-Cancelaciones | RF-010 | RNF-CON-04 | CU-005 | reservas.estado, historial_reservas | ADR-005 | Cubierto |
 | Cancelación interna | BR-Cancelaciones | RF-011 | RNF-CON-04 | CU-005, CU-011 | reservas, historial_reservas | ADR-005 | Cubierto |
@@ -38,10 +38,10 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 | Gestión de servicios | BR-Servicios | RF-013 | RNF-MAN-01 | CU-007 | servicios | ADR-004 | Cubierto |
 | Gestión de horarios | BR-Horarios | RF-014 | RNF-MAN-01 | CU-008 | disponibilidades | ADR-004 | Cubierto |
 | Bloqueos excepcionales | BR-Horarios | RF-015 | RNF-CON-05 | CU-009 | disponibilidades.bloqueo_excepcional | ADR-003 | Cubierto |
-| Agenda del peluquero | BR-Permisos, MVP-Entra | RF-016 | RNF-SEG-03 | CU-010 | reservas, usuarios | ADR-002, ADR-003 | Cubierto |
+| Agenda del peluquero | BR-Permisos, MVP-Entra | RF-016 | RNF-SEG-03 | CU-010 | reservas, usuarios | ADR-002, ADR-003, ADR-015 | Implementado con tests y UI |
 | Agenda administrativa | BR-Permisos, MVP-Entra | RF-017 | RNF-MAN-04 | CU-014 | reservas, usuarios | ADR-002 | Cubierto |
-| Estados de reserva | BR-Estados, VAL-Estados | RF-018 | RNF-CON-03 | CU-011 | reservas.estado | ADR-005 | Cubierto con pendiente |
-| Historial de reserva | BR-Modificación, BR-Cancelación | RF-019 | RNF-CON-04, RNF-MAN-03 | CU-004, CU-005, CU-011 | historial_reservas | ADR-003, ADR-005 | Cubierto |
+| Estados de reserva | BR-Estados, VAL-Estados | RF-018 | RNF-CON-03 | CU-011 | reservas.estado | ADR-005, ADR-015 | Implementado con tests y UI |
+| Historial de reserva | BR-Modificación, BR-Cancelación | RF-019 | RNF-CON-04, RNF-MAN-03 | CU-004, CU-005, CU-011 | historial_reservas | ADR-003, ADR-005, ADR-015 | Implementado con tests y UI |
 | Recordatorios email | BR-Recordatorios | RF-020 | RNF-USA-04, RNF-CON-08 | CU-013 | notificaciones | ADR-008 | Cubierto |
 | WhatsApp | BR-Recordatorios, MVP-Pendientes | RF-021 | RNF-MAN-05 | CU-013 | notificaciones.canal | ADR-008 | Pendiente |
 | Google Calendar | BR-Calendar, MVP-Integraciones | RF-022, RF-023 | RNF-MAN-05 | CU-012 | eventos_calendario | ADR-008 | Cubierto |
@@ -64,8 +64,9 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 | ADR-010 | Centralizar la configuración tipada desde el entorno | `.env`, settings, conexión de base y seed. |
 | ADR-011 | Centralizar vocabularios del dominio mediante enums | Estados, canales, roles y restricciones compatibles con PostgreSQL. |
 | ADR-012 | Proteger los solapamientos de reservas en PostgreSQL | `fecha_fin`, `btree_gist` y exclusión GiST. |
-| ADR-013 | Versionar y sincronizar el estado de implementación | Estado v1.2 y v1.3, trazabilidad y TASKS alineadas. |
+| ADR-013 | Versionar y sincronizar el estado de implementación | Estado v1.2, v1.3 y v1.4, trazabilidad y TASKS alineadas. |
 | ADR-014 | Autenticación con Google OpenID Connect y servidor unificado | Identidad OIDC, inmutabilidad `google_sub`, sesión JWT y hosting unificado. |
+| ADR-015 | Módulo de reservas, cálculo de disponibilidad y optimización del callback | Módulo `booking`, cálculo de franjas de 30 min, persistencia de reservas y pool HTTP. |
 
 ## 4. Cobertura por modelo de datos
 

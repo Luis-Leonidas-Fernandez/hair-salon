@@ -6,7 +6,7 @@ redirects, and delegating business logic to the identity service and provider.
 
 import secrets
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,13 +21,17 @@ from app.modules.identity.google_flow import (
 )
 from app.modules.identity.google_port import IdentityProvider
 from app.modules.identity.observability import log_identity_event
-from app.modules.identity.schemas import CurrentUserResponse
-from app.modules.identity.service import authenticate_and_resolve_actor
+from app.modules.identity.schemas import CompleteProfileRequest, CurrentUserResponse
+from app.modules.identity.service import (
+    authenticate_and_resolve_actor,
+    complete_client_profile,
+)
 from app.modules.identity.session import (
     clear_session_cookie,
     extract_session,
     issue_session_cookie,
 )
+from app.modules.services.shared.models import Client, User
 
 router = APIRouter(prefix="/auth", tags=["Identity"])
 
@@ -189,11 +193,15 @@ async def google_auth_callback(
         res.delete_cookie(GOOGLE_FLOW_COOKIE_NAME, path="/auth/google")
         return res
 
-    # 4. Contextual redirection target based on actor type and CU-002
+    # 4. Contextual redirection target based on actor type and role
+    # (CU-002, CU-003, CU-010)
     if actor.actor_type == "staff":
-        target_url = "/admin"
+        if actor.role == "PELUQUERO":
+            target_url = "/peluquero/turnos/"
+        else:
+            target_url = "/admin"
     elif not actor.profile_complete:
-        target_url = "/reservas/?completar_datos=1"  # CU-002
+        target_url = "/completar-perfil"  # CU-002
     else:
         target_url = "/reservas/"  # CU-003
 
@@ -226,6 +234,7 @@ async def google_auth_callback(
 async def get_current_user(
     request: Request,
     settings: Settings = Depends(get_settings),
+    db: AsyncSession = Depends(get_db_session),
 ) -> CurrentUserResponse:
     """Return the profile claims of the currently authenticated session."""
     session = extract_session(
@@ -238,12 +247,23 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="NOT_AUTHENTICATED",
         )
+
+    display_name = session.nombre
+    if session.actor_type == "staff":
+        u = await db.get(User, session.sub)
+        if u and u.nombre_completo:
+            display_name = u.nombre_completo
+    elif session.actor_type == "cliente":
+        c = await db.get(Client, session.sub)
+        if c and c.nombre:
+            display_name = c.nombre
+
     return CurrentUserResponse(
         id=session.sub,
         actor_type=session.actor_type,
         role=session.role,
         email=session.email,
-        nombre=session.nombre,
+        nombre=display_name,
         profile_complete=session.profile_complete,
     )
 
@@ -256,3 +276,68 @@ async def logout(
     response = JSONResponse(content={"status": "logged_out"})
     clear_session_cookie(response, settings.session_cookie_name)
     return response
+
+
+@router.post("/complete-profile", response_model=CurrentUserResponse)
+async def complete_profile(
+    body: CompleteProfileRequest,
+    request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_db_session),
+    settings: Settings = Depends(get_settings),
+) -> CurrentUserResponse:
+    """Update contact data for the currently authenticated client (CU-002)."""
+    session = extract_session(
+        request,
+        settings.secret_key,
+        settings.session_cookie_name,
+    )
+    if session is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="NOT_AUTHENTICATED",
+        )
+
+    if session.actor_type != "cliente":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="FORBIDDEN_STAFF_ACTOR",
+        )
+
+    try:
+        actor = await complete_client_profile(
+            db,
+            client_id=session.sub,
+            telefono=body.telefono,
+            whatsapp=body.whatsapp,
+            fecha_nacimiento=body.fecha_nacimiento,
+        )
+    except GoogleOAuthError as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=err.code,
+        )
+
+    is_production = settings.environment.lower() == "production"
+    issue_session_cookie(
+        response,
+        actor_id=actor.actor_id,
+        actor_type=actor.actor_type,
+        role=actor.role,
+        email=actor.email,
+        nombre=actor.nombre,
+        profile_complete=actor.profile_complete,
+        secret_key=settings.secret_key,
+        cookie_name=settings.session_cookie_name,
+        ttl_minutes=settings.session_ttl_minutes,
+        secure=is_production,
+    )
+
+    return CurrentUserResponse(
+        id=actor.actor_id,
+        actor_type=actor.actor_type,
+        role=actor.role,
+        email=actor.email,
+        nombre=actor.nombre,
+        profile_complete=actor.profile_complete,
+    )

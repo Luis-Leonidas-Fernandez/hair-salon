@@ -6,10 +6,12 @@ and cryptographic verification of Google ID tokens.
 
 import base64
 import hashlib
+import logging
 import secrets
 from urllib.parse import urlencode
 
 import httpx
+import requests
 from fastapi.concurrency import run_in_threadpool
 from google.auth.transport.requests import Request as GoogleRequest
 from google.oauth2 import id_token
@@ -18,6 +20,18 @@ from app.modules.identity.google_port import IdentityProvider, VerifiedIdentity
 
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+
+logger = logging.getLogger("afterlook.identity.google")
+
+_google_http_session: requests.Session | None = None
+
+
+def get_google_http_session() -> requests.Session:
+    """Return a shared requests.Session for Google certificate verification."""
+    global _google_http_session
+    if _google_http_session is None:
+        _google_http_session = requests.Session()
+    return _google_http_session
 
 
 class GoogleOAuthError(Exception):
@@ -65,7 +79,7 @@ class GoogleOIDCAdapter(IdentityProvider):
     async def exchange_code(
         self, *, code: str, expected_nonce: str, code_verifier: str
     ) -> VerifiedIdentity:
-        """Exchange one-time code for tokens and verify the ID token."""
+        logger.info("Exchanging authorization code with Google token endpoint...")
         async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
             response = await client.post(
                 GOOGLE_TOKEN_URL,
@@ -79,6 +93,11 @@ class GoogleOIDCAdapter(IdentityProvider):
                 },
             )
             if response.status_code != 200:
+                logger.error(
+                    "Google token exchange failed with status %d: %s",
+                    response.status_code,
+                    response.text,
+                )
                 raise GoogleOAuthError(
                     "GOOGLE_EXCHANGE_FAILED", f"Status code: {response.status_code}"
                 )
@@ -88,13 +107,18 @@ class GoogleOIDCAdapter(IdentityProvider):
             if not raw_id_token or not isinstance(raw_id_token, str):
                 raise GoogleOAuthError("GOOGLE_INVALID_TOKEN_RESPONSE")
 
+        logger.info(
+            "Token exchange successful. Cryptographically verifying ID token..."
+        )
         try:
+            google_request = GoogleRequest(session=get_google_http_session())
             claims = await run_in_threadpool(
                 id_token.verify_oauth2_token,
                 raw_id_token,
-                GoogleRequest(),
+                google_request,
                 self.client_id,
             )
+            logger.info("Google ID token verified successfully.")
             sub = claims.get("sub")
             email = claims.get("email")
             email_verified = claims.get("email_verified") in (True, "true")

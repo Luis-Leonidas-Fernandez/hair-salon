@@ -175,11 +175,103 @@ def test_callback_successful_new_client_redirects_to_complete_data() -> None:
         )
 
     assert response.status_code == 303
-    assert response.headers["location"] == "/reservas/?completar_datos=1"
+    assert response.headers["location"] == "/completar-perfil"
 
     set_cookie = response.headers.get("set-cookie")
     assert set_cookie is not None
     assert "afterlook_session=" in set_cookie
+
+    app.dependency_overrides.clear()
+
+
+def test_callback_staff_hairdresser_redirects_to_turnos() -> None:
+    """Callback for staff with PELUQUERO role redirects to /peluquero/turnos/."""
+    from unittest.mock import patch
+
+    settings = get_test_settings(google_enabled=True)
+    app.dependency_overrides[get_settings] = lambda: settings
+    app.dependency_overrides[get_identity_provider] = lambda: (
+        FakeRouterIdentityProvider()
+    )
+
+    mock_actor = AuthenticatedActor(
+        actor_id=2,
+        actor_type="staff",
+        role="PELUQUERO",
+        email="hairdresser@example.com",
+        nombre="Sergio Peluquero",
+        profile_complete=True,
+    )
+
+    flow = GoogleFlowState(
+        attempt_id="staff123456",
+        state="valid_state_staff",
+        nonce="valid_nonce_staff",
+        verifier="valid_verifier_staff",
+        source="web",
+    )
+    flow_cookie = encode_flow_state(flow, settings.secret_key)
+
+    client = TestClient(app)
+    client.cookies.set(GOOGLE_FLOW_COOKIE_NAME, flow_cookie, path="/auth/google")
+
+    with patch(
+        "app.modules.identity.router.authenticate_and_resolve_actor",
+        return_value=mock_actor,
+    ):
+        response = client.get(
+            "/auth/google/callback?code=good_code&state=valid_state_staff",
+            follow_redirects=False,
+        )
+
+    assert response.status_code == 303
+    assert response.headers["location"] == "/peluquero/turnos/"
+
+    app.dependency_overrides.clear()
+
+
+def test_callback_staff_admin_redirects_to_admin() -> None:
+    """Callback for staff with ADMIN role redirects to /admin."""
+    from unittest.mock import patch
+
+    settings = get_test_settings(google_enabled=True)
+    app.dependency_overrides[get_settings] = lambda: settings
+    app.dependency_overrides[get_identity_provider] = lambda: (
+        FakeRouterIdentityProvider()
+    )
+
+    mock_actor = AuthenticatedActor(
+        actor_id=1,
+        actor_type="staff",
+        role="ADMIN",
+        email="admin@example.com",
+        nombre="Admin Salon",
+        profile_complete=True,
+    )
+
+    flow = GoogleFlowState(
+        attempt_id="admin123456",
+        state="valid_state_admin",
+        nonce="valid_nonce_admin",
+        verifier="valid_verifier_admin",
+        source="web",
+    )
+    flow_cookie = encode_flow_state(flow, settings.secret_key)
+
+    client = TestClient(app)
+    client.cookies.set(GOOGLE_FLOW_COOKIE_NAME, flow_cookie, path="/auth/google")
+
+    with patch(
+        "app.modules.identity.router.authenticate_and_resolve_actor",
+        return_value=mock_actor,
+    ):
+        response = client.get(
+            "/auth/google/callback?code=good_code&state=valid_state_admin",
+            follow_redirects=False,
+        )
+
+    assert response.status_code == 303
+    assert response.headers["location"] == "/admin"
 
     app.dependency_overrides.clear()
 
@@ -248,4 +340,111 @@ def test_logout_endpoint_clears_cookie() -> None:
     assert "afterlook_session=" in set_cookie
     assert "Max-Age=0" in set_cookie
 
+    app.dependency_overrides.clear()
+
+
+def test_complete_profile_unauthenticated() -> None:
+    """Returns 401 when completing profile without session."""
+    settings = get_test_settings(google_enabled=True)
+    app.dependency_overrides[get_settings] = lambda: settings
+    client = TestClient(app)
+
+    response = client.post(
+        "/auth/complete-profile",
+        json={"telefono": "+5491112345678"},
+    )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "NOT_AUTHENTICATED"
+    app.dependency_overrides.clear()
+
+
+def test_complete_profile_staff_forbidden() -> None:
+    """Returns 403 when a staff user attempts to complete client profile."""
+    from fastapi import Response
+
+    settings = get_test_settings(google_enabled=True)
+    app.dependency_overrides[get_settings] = lambda: settings
+    client = TestClient(app)
+
+    dummy_resp = Response()
+    issue_session_cookie(
+        dummy_resp,
+        actor_id=1,
+        actor_type="staff",
+        role="ADMIN",
+        email="admin@example.com",
+        nombre="Admin",
+        profile_complete=True,
+        secret_key=settings.secret_key,
+        cookie_name=settings.session_cookie_name,
+    )
+    raw_cookie = dummy_resp.headers["set-cookie"].split(";")[0].split("=")[1]
+    client.cookies.set(settings.session_cookie_name, raw_cookie)
+
+    response = client.post(
+        "/auth/complete-profile",
+        json={"telefono": "+5491112345678"},
+    )
+    assert response.status_code == 403
+    assert response.json()["detail"] == "FORBIDDEN_STAFF_ACTOR"
+    app.dependency_overrides.clear()
+
+
+def test_complete_profile_client_success() -> None:
+    """Updates client profile, returns 200 and reissues session cookie."""
+    from unittest.mock import patch
+
+    from fastapi import Response
+
+    settings = get_test_settings(google_enabled=True)
+    app.dependency_overrides[get_settings] = lambda: settings
+    client = TestClient(app)
+
+    dummy_resp = Response()
+    issue_session_cookie(
+        dummy_resp,
+        actor_id=45,
+        actor_type="cliente",
+        role="CLIENTE",
+        email="cliente@example.com",
+        nombre="Cliente Mock",
+        profile_complete=False,
+        secret_key=settings.secret_key,
+        cookie_name=settings.session_cookie_name,
+    )
+    raw_cookie = dummy_resp.headers["set-cookie"].split(";")[0].split("=")[1]
+    client.cookies.set(settings.session_cookie_name, raw_cookie)
+
+    mock_updated_actor = AuthenticatedActor(
+        actor_id=45,
+        actor_type="cliente",
+        role="CLIENTE",
+        email="cliente@example.com",
+        nombre="Cliente Mock",
+        profile_complete=True,
+    )
+
+    with patch(
+        "app.modules.identity.router.complete_client_profile",
+        return_value=mock_updated_actor,
+    ):
+        response = client.post(
+            "/auth/complete-profile",
+            json={
+                "telefono": "+5491112345678",
+                "whatsapp": "+5491112345678",
+                "fecha_nacimiento": "1995-05-20",
+            },
+        )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id"] == 45
+    assert data["actor_type"] == "cliente"
+    assert data["profile_complete"] is True
+
+    # Reissued cookie has profile_complete=True
+    set_cookie = response.headers.get("set-cookie")
+    assert set_cookie is not None
+    assert "afterlook_session=" in set_cookie
     app.dependency_overrides.clear()

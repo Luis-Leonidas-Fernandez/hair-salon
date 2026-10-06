@@ -30,3 +30,5 @@ Los ADR no reemplazan requisitos ni diagramas. Sirven para conservar el porqué 
 | [ADR-012](ADR-012-proteger-solapamientos-en-postgresql.md) | Proteger los solapamientos de reservas en PostgreSQL | Aceptado |
 | [ADR-013](ADR-013-versionar-el-estado-de-implementacion.md) | Versionar y sincronizar el estado de implementación | Aceptado |
 | [ADR-014](ADR-014-autenticacion-google-openid-connect-y-servidor-unificado.md) | Autenticación con Google OpenID Connect y servidor unificado | Aceptado |
+| [ADR-015](ADR-015-modulo-de-reservas-y-optimizacion-de-disponibilidad.md) | Módulo de reservas, cálculo de disponibilidad y optimización del callback | Aceptado |
+| [ADR-016](ADR-016-home-de-registro-y-refinamiento-de-experiencia-de-usuario.md) | Home de registro, inhabilitación no destructiva de servicios y refinamiento de UX | Aceptado |

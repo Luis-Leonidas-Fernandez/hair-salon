@@ -6,6 +6,7 @@ and CU-002 (contact completeness evaluation) while respecting ADR-002.
 """
 
 from dataclasses import dataclass
+from datetime import date
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -64,9 +65,20 @@ async def authenticate_and_resolve_actor(
         if not user.activo:
             raise GoogleOAuthError("STAFF_ACCOUNT_INACTIVE")
 
+        changed = False
         # Link google_sub if this is the first login
         if user.google_sub is None:
             user.google_sub = identity.subject
+            changed = True
+
+        # Keep staff display name in sync with Google profile name when provided
+        if identity.name and identity.name.strip():
+            google_name = identity.name.strip()
+            if user.nombre_completo != google_name:
+                user.nombre_completo = google_name
+                changed = True
+
+        if changed:
             await session.commit()
 
         role_name = user.rol.nombre if user.rol else "PELUQUERO"
@@ -117,4 +129,38 @@ async def authenticate_and_resolve_actor(
         email=client.email_google,
         nombre=client.nombre,
         profile_complete=has_contact,
+    )
+
+
+async def complete_client_profile(
+    session: AsyncSession,
+    client_id: int,
+    telefono: str,
+    whatsapp: str | None = None,
+    fecha_nacimiento: date | None = None,
+) -> AuthenticatedActor:
+    """Update contact information for an authenticated client under CU-002."""
+    stmt = select(Client).where(Client.id == client_id)
+    client = await session.scalar(stmt)
+
+    if client is None:
+        raise GoogleOAuthError("CLIENT_NOT_FOUND")
+
+    if client.estado_cuenta != ClientAccountStatus.ACTIVE.value:
+        raise GoogleOAuthError("CLIENT_ACCOUNT_SUSPENDED")
+
+    client.telefono = telefono
+    client.whatsapp = whatsapp
+    client.fecha_nacimiento = fecha_nacimiento
+
+    await session.commit()
+    await session.refresh(client)
+
+    return AuthenticatedActor(
+        actor_id=client.id,
+        actor_type="cliente",
+        role="CLIENTE",
+        email=client.email_google,
+        nombre=client.nombre,
+        profile_complete=True,
     )

@@ -1,10 +1,13 @@
-"""Unit tests for identity domain service (CU-001, CU-002, ADR-002)."""
+from datetime import date
 
 import pytest
 
 from app.modules.identity.google_adapter import GoogleOAuthError
 from app.modules.identity.google_port import IdentityProvider, VerifiedIdentity
-from app.modules.identity.service import authenticate_and_resolve_actor
+from app.modules.identity.service import (
+    authenticate_and_resolve_actor,
+    complete_client_profile,
+)
 from app.modules.services.shared.domain_types import ClientAccountStatus
 from app.modules.services.shared.models import Client, Role, User
 
@@ -233,6 +236,81 @@ async def test_authenticate_suspended_client_raises_error() -> None:
             code="code-123",
             expected_nonce="nonce-123",
             code_verifier="verifier-123",
+        )
+
+    assert exc_info.value.code == "CLIENT_ACCOUNT_SUSPENDED"
+
+
+@pytest.mark.asyncio
+async def test_complete_client_profile_success() -> None:
+    """Updates client contact info and returns AuthenticatedActor."""
+    client = Client(
+        id=15,
+        nombre="Lucía Valenzuela",
+        email_google="lucia@example.com",
+        google_sub="google-sub-lucia",
+        telefono=None,
+        whatsapp=None,
+        fecha_nacimiento=None,
+        estado_cuenta=ClientAccountStatus.ACTIVE.value,
+    )
+
+    session = FakeDatabaseSession(users=[], clients=[client])
+
+    actor = await complete_client_profile(
+        session,  # type: ignore[arg-type]
+        client_id=15,
+        telefono="+54 9 11 1111-2222",
+        whatsapp="+54 9 11 1111-2222",
+        fecha_nacimiento=date(1996, 7, 15),
+    )
+
+    assert actor.actor_id == 15
+    assert actor.actor_type == "cliente"
+    assert actor.role == "CLIENTE"
+    assert actor.email == "lucia@example.com"
+    assert actor.nombre == "Lucía Valenzuela"
+    assert actor.profile_complete is True
+
+    # Verify updated client model
+    assert client.telefono == "+54 9 11 1111-2222"
+    assert client.whatsapp == "+54 9 11 1111-2222"
+    assert client.fecha_nacimiento == date(1996, 7, 15)
+
+
+@pytest.mark.asyncio
+async def test_complete_client_profile_not_found() -> None:
+    """Raises CLIENT_NOT_FOUND when client does not exist."""
+    session = FakeDatabaseSession(users=[], clients=[])
+
+    with pytest.raises(GoogleOAuthError) as exc_info:
+        await complete_client_profile(
+            session,  # type: ignore[arg-type]
+            client_id=999,
+            telefono="+54 9 11 1111-2222",
+        )
+
+    assert exc_info.value.code == "CLIENT_NOT_FOUND"
+
+
+@pytest.mark.asyncio
+async def test_complete_client_profile_suspended() -> None:
+    """Raises CLIENT_ACCOUNT_SUSPENDED when client is inactive or suspended."""
+    suspended_client = Client(
+        id=25,
+        nombre="Usuario Suspendido",
+        email_google="susp@example.com",
+        google_sub="google-sub-susp",
+        estado_cuenta=ClientAccountStatus.SUSPENDED.value,
+    )
+
+    session = FakeDatabaseSession(users=[], clients=[suspended_client])
+
+    with pytest.raises(GoogleOAuthError) as exc_info:
+        await complete_client_profile(
+            session,  # type: ignore[arg-type]
+            client_id=25,
+            telefono="+54 9 11 1111-2222",
         )
 
     assert exc_info.value.code == "CLIENT_ACCOUNT_SUSPENDED"
