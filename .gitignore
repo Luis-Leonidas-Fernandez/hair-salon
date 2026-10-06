@@ -68,3 +68,15 @@ logs/
 .tmp/
 tmp/
 .cache/
+
+# Node.js and frontend build artifacts
+node_modules/
+*/node_modules/
+.astro/
+*/.astro/
+dist/
+*/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
