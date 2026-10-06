@@ -2,7 +2,7 @@
 
 import asyncio
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import get_settings
@@ -11,6 +11,8 @@ from app.modules.services.shared.initial_catalog import INITIAL_SERVICES, Initia
 from app.modules.services.shared.initial_roles import INITIAL_ROLES, InitialRole
 from app.modules.services.shared.models import (
     Availability,
+    Booking,
+    Client,
     Role,
     Service,
     User,
@@ -55,6 +57,21 @@ async def get_or_create_user(
     session: AsyncSession, *, identity: SeedIdentity, role: Role
 ) -> User:
     """Return a configured internal user after checking its expected role."""
+
+    # Remove temporary client profile if this staff identity previously logged in
+    # via OAuth
+    existing_client = await session.scalar(
+        select(Client).where(Client.email_google == identity.email)
+    )
+    if existing_client is not None:
+        has_bookings = await session.scalar(
+            select(func.count(Booking.id)).where(
+                Booking.cliente_id == existing_client.id
+            )
+        )
+        if not has_bookings:
+            await session.delete(existing_client)
+            await session.flush()
 
     user = await session.scalar(select(User).where(User.email_google == identity.email))
     validate_existing_user_role(user=user, identity=identity, role_id=role.id)
@@ -181,6 +198,20 @@ async def seed() -> None:
             )
             for service in services:
                 await ensure_capability(session, user=hairdresser, service=service)
+
+        # Deactivate any legacy placeholder users that are not part of the active
+        # seed plan
+        active_seed_emails = {identity.email for identity in configured_identities}
+        legacy_users = (
+            await session.scalars(
+                select(User).where(
+                    User.email_google.like("%@afterlook.com"),
+                    User.email_google.not_in(active_seed_emails),
+                )
+            )
+        ).all()
+        for legacy_user in legacy_users:
+            legacy_user.activo = False
 
 
 if __name__ == "__main__":
