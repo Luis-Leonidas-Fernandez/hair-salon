@@ -25,13 +25,13 @@ class Settings(BaseSettings):
         return v
     database_echo: bool = False
     database_pool_pre_ping: bool = True
-    secret_key: str
-    seed_admin_name: str
-    seed_admin_email: str
-    seed_hairdresser_1_name: str
-    seed_hairdresser_1_email: str
-    seed_hairdresser_2_name: str
-    seed_hairdresser_2_email: str
+    secret_key: str = "afterlook-default-secret-key-32-chars-long-secure!"
+    seed_admin_name: str = "Sergio"
+    seed_admin_email: str = "admin@afterlook.com"
+    seed_hairdresser_1_name: str = "Peluquero 1"
+    seed_hairdresser_1_email: str = "peluquero1@afterlook.com"
+    seed_hairdresser_2_name: str = "Peluquero 2"
+    seed_hairdresser_2_email: str = "peluquero2@afterlook.com"
     seed_hairdresser_3_name: str = "Peluquero 3"
     seed_hairdresser_3_email: str = "peluquero3@afterlook.com"
     google_client_id: str | None = None
