@@ -1,0 +1,142 @@
+---
+import '../styles/global.css';
+import '../styles/reservas.css';
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Cortes precisos que combinan con tu estilo personal en After Look." />
+    <title>Servicios / After Look</title>
+  </head>
+  <body class="reservas-page">
+    <main class="reservas-shell" aria-labelledby="servicio-title">
+      <section class="reservas-photo-card" aria-labelledby="servicio-title">
+        <nav class="reservas-topbar" aria-label="Navegación de reserva">
+          <a class="reservas-back" href="/registro/" aria-label="Volver al acceso de registro">← Registro</a>
+          <a class="reservas-home" href="/" aria-label="Volver al inicio de After Look">After Look</a>
+          <div class="user-session-bar" style="margin-left:auto;display:flex;align-items:center;gap:12px;">
+            <span id="user-display" style="font-size:0.85rem;color:#38bdf8;font-weight:500;"></span>
+            <button id="logout-btn" type="button" style="display:none;background:rgba(255,255,255,0.08);border:none;color:#e2e8f0;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Salir</button>
+          </div>
+        </nav>
+
+        <figure class="service-figure">
+          <img src="/images/service-beard.png" alt="Barbero perfilando la barba de un cliente en el salón" />
+        </figure>
+
+        <div class="service-overview">
+          <div class="service-summary">
+            <h1 id="servicio-title">Servicios</h1>
+            <p>Cortes precisos que combinan con tu estilo personal.</p>
+          </div>
+          <ul class="service-meta" aria-label="Detalles ilustrativos del servicio">
+            <li>
+              <span aria-hidden="true">⌁</span>
+              Duración a confirmar
+            </li>
+            <li>
+              <span aria-hidden="true">✦</span>
+              Atención en salón
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="booking-panel" aria-labelledby="seleccion-title">
+        <div class="booking-panel-header">
+          <p class="reservas-kicker">Selección ilustrativa</p>
+          <h2 id="seleccion-title">Armá el recorrido del turno</h2>
+          <p>Esta pantalla muestra cómo podría verse la reserva. Las fechas y horarios son ejemplos y no confirman disponibilidad real.</p>
+        </div>
+
+        <section class="choice-section" aria-labelledby="peluquero-title">
+          <h3 id="peluquero-title">Elegí peluquero</h3>
+          <div class="stylist-list" role="list" aria-label="Peluqueros disponibles de ejemplo">
+            <div class="stylist-card is-selected" role="listitem" aria-current="true">
+              <span class="stylist-avatar" aria-hidden="true">P1</span>
+              <span>Peluquero 1</span>
+            </div>
+            <div class="stylist-card" role="listitem">
+              <span class="stylist-avatar" aria-hidden="true">P2</span>
+              <span>Peluquero 2</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="choice-section" aria-labelledby="fecha-title">
+          <div class="section-heading-row">
+            <h3 id="fecha-title">Elegí fecha</h3>
+          </div>
+          <div class="date-strip" role="list" aria-label="Fechas ilustrativas">
+            <div class="date-chip" role="listitem"><span>Lun</span><strong>03</strong></div>
+            <div class="date-chip" role="listitem"><span>Mar</span><strong>04</strong></div>
+            <div class="date-chip" role="listitem"><span>Mié</span><strong>05</strong></div>
+            <div class="date-chip is-selected" role="listitem" aria-current="date"><span>Jue</span><strong>06</strong></div>
+            <div class="date-chip" role="listitem"><span>Vie</span><strong>07</strong></div>
+            <div class="date-chip" role="listitem"><span>Sáb</span><strong>08</strong></div>
+          </div>
+        </section>
+
+        <section class="choice-section" aria-labelledby="horario-title">
+          <div class="section-heading-row">
+            <h3 id="horario-title">Elegí horario</h3>
+          </div>
+          <div class="time-grid" role="list" aria-label="Horarios ilustrativos disponibles">
+            <span class="time-pill" role="listitem">09:00</span>
+            <span class="time-pill" role="listitem">10:00</span>
+            <span class="time-pill is-selected" role="listitem" aria-current="time">11:00</span>
+            <span class="time-pill" role="listitem">14:00</span>
+            <span class="time-pill" role="listitem">15:00</span>
+            <span class="time-pill is-muted" role="listitem">16:00</span>
+          </div>
+        </section>
+
+        <div class="booking-action" aria-label="Confirmación no disponible en esta vista interna">
+          <button class="booking-cta" type="button" disabled aria-disabled="true">Confirmar turno</button>
+          <p id="booking-status-note">Turno pendiente de confirmación de datos.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      async function initSession() {
+        const userDisplay = document.getElementById("user-display");
+        const logoutBtn = document.getElementById("logout-btn");
+        const statusNote = document.getElementById("booking-status-note");
+
+        try {
+          const res = await fetch("/auth/me");
+          if (res.ok) {
+            const data = await res.json();
+            if (userDisplay) {
+              userDisplay.textContent = `¡Hola, ${data.nombre}!`;
+            }
+            if (logoutBtn) {
+              logoutBtn.style.display = "inline-block";
+              logoutBtn.addEventListener("click", async () => {
+                await fetch("/auth/logout", { method: "POST" });
+                window.location.href = "/";
+              });
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("completar_datos")) {
+              if (statusNote) {
+                statusNote.textContent = `Sesión iniciada con éxito (${data.email}). Tu cuenta de Google fue verificada.`;
+                statusNote.style.color = "#38bdf8";
+              }
+              window.history.replaceState(null, "", window.location.pathname);
+            }
+          }
+        } catch {
+          // No logueado o error de red
+        }
+      }
+
+      initSession();
+    </script>
+  </body>
+</html>

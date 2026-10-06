@@ -210,23 +210,22 @@ Create a local database for the application, then configure its connection strin
 alembic upgrade head
 ```
 
-### 6. Start the API
+### 6. Start the unified application (Frontend + Backend)
+
+To build the Astro frontend and start the unified server on port 8000:
 
 ```bash
 make run
 ```
 
-The API is expected to be available at:
+The unified application is available at:
 
 ```text
-http://127.0.0.1:8000
-```
-
-Interactive API documentation:
-
-```text
-http://127.0.0.1:8000/docs
-http://127.0.0.1:8000/redoc
+http://127.0.0.1:8000/           # Astro Landing Page
+http://127.0.0.1:8000/registro/  # Client registration with Google OAuth
+http://127.0.0.1:8000/reservas/  # Service bookings
+http://127.0.0.1:8000/health     # Health check
+http://127.0.0.1:8000/docs       # Interactive API documentation (Swagger)
 ```
 
 ---

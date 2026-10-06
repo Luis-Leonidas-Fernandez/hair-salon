@@ -23,8 +23,8 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 
 | Tema | Regla / decisión fuente | RF | RNF | CU | Modelo | ADR | Estado |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Login con Google | BR-Reservas, MVP-Integraciones, VAL-Login | RF-001 | RNF-SEG-01 | CU-001 | clientes.email_google | ADR-002 | Cubierto |
-| Datos del cliente | BR-Reservas, VAL-Datos cliente | RF-002 | RNF-SEG-04 | CU-002 | clientes | ADR-002 | Cubierto |
+| Login con Google | BR-Reservas, MVP-Integraciones, VAL-Login | RF-001 | RNF-SEG-01 | CU-001 | clientes.email_google, clientes.google_sub | ADR-002, ADR-014 | Implementado con tests |
+| Datos del cliente | BR-Reservas, VAL-Datos cliente | RF-002 | RNF-SEG-04 | CU-002 | clientes | ADR-002, ADR-014 | Implementado con tests |
 | Servicios iniciales | BR-Servicios, VAL-Servicios | RF-003, RF-013 | RNF-ESC-02 | CU-003, CU-007 | servicios | ADR-003 | Cubierto |
 | Selección de peluquero | BR-Reservas, VAL-Elección | RF-004 | RNF-USA-01 | CU-003 | reservas.peluquero_id | ADR-003 | Cubierto |
 | Consulta de disponibilidad | BR-Horarios, BR-Prevención | RF-005 | RNF-CON-05 | CU-003, CU-008 | disponibilidades | ADR-001, ADR-003 | Cubierto |
@@ -64,7 +64,8 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 | ADR-010 | Centralizar la configuración tipada desde el entorno | `.env`, settings, conexión de base y seed. |
 | ADR-011 | Centralizar vocabularios del dominio mediante enums | Estados, canales, roles y restricciones compatibles con PostgreSQL. |
 | ADR-012 | Proteger los solapamientos de reservas en PostgreSQL | `fecha_fin`, `btree_gist` y exclusión GiST. |
-| ADR-013 | Versionar y sincronizar el estado de implementación | Estado v1.2, trazabilidad y TASKS alineadas. |
+| ADR-013 | Versionar y sincronizar el estado de implementación | Estado v1.2 y v1.3, trazabilidad y TASKS alineadas. |
+| ADR-014 | Autenticación con Google OpenID Connect y servidor unificado | Identidad OIDC, inmutabilidad `google_sub`, sesión JWT y hosting unificado. |
 
 ## 4. Cobertura por modelo de datos
 

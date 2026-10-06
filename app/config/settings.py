@@ -21,6 +21,20 @@ class Settings(BaseSettings):
     seed_hairdresser_1_email: str
     seed_hairdresser_2_name: str
     seed_hairdresser_2_email: str
+    google_client_id: str | None = None
+    google_client_secret: str | None = None
+    google_redirect_uri: str | None = None
+    session_cookie_name: str = "afterlook_session"
+    session_ttl_minutes: int = 480
+
+    @property
+    def google_oauth_enabled(self) -> bool:
+        """Verify if Google OAuth has all required credentials configured."""
+        return bool(
+            self.google_client_id
+            and self.google_client_secret
+            and self.google_redirect_uri
+        )
 
     model_config = SettingsConfigDict(
         env_file=".env",

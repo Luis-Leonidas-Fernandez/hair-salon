@@ -1,6 +1,10 @@
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.config.settings import get_settings
+from app.modules.identity.router import router as identity_router
 from app.shared.errors.application_error import ApplicationError
 from app.shared.errors.handlers import (
     application_error_handler,
@@ -14,18 +18,27 @@ app = FastAPI(
 )
 
 app.add_exception_handler(ApplicationError, application_error_handler)
-
 app.add_exception_handler(Exception, unexpected_error_handler)
 
+app.include_router(identity_router)
 
-@app.get("/")
-async def root() -> dict[str, str]:
+
+@app.get("/health")
+async def health_check() -> dict[str, str]:
+    return {"status": "ok"}
+
+
+@app.get("/api")
+async def api_info() -> dict[str, str]:
     return {
         "message": f"{settings.app_name} API",
         "status": "running",
     }
 
 
-@app.get("/health")
-async def health_check() -> dict[str, str]:
-    return {"status": "ok"}
+# Montar frontend compilado de Astro si existe el directorio dist
+frontend_dist_dir = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+if frontend_dist_dir.is_dir():
+    app.mount(
+        "/", StaticFiles(directory=str(frontend_dist_dir), html=True), name="frontend"
+    )

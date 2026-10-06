@@ -47,6 +47,7 @@ La validación mencionó estados del negocio, pero no conviene trasladarlos como
 | Vocabularios controlados | Enums en `app/modules/services/shared/domain_types.py` y módulos existentes | Implementado |
 | Solapamientos | `reservas.fecha_fin` generada y exclusión GiST por peluquero | Implementado |
 | Migración física | `20260920_01_reservation_integrity` aplicada en PostgreSQL | Implementado |
+| Identificador Google OIDC | `google_sub` único e indexado en `clientes` y `usuarios` (`20261005_02_google_oauth_sub`) | Implementado |
 | Precios | Se mantienen como dato interno; no se muestran al cliente | Vigente |
 | Pagos y señas | No se agregan tablas ni flujo | Fuera de alcance |
 

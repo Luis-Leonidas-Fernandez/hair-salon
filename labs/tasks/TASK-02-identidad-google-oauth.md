@@ -26,6 +26,40 @@ app/config/settings.py
 app/main.py
 ```
 
+## Preparar la estructura de archivos
+
+Ejecutar estos comandos desde la raíz del proyecto. Crean únicamente los archivos nuevos de identidad; no sobrescriben `settings.py` ni `main.py`, que ya existen.
+
+### macOS y Linux
+
+```bash
+mkdir -p app/modules/identity
+touch app/modules/identity/router.py \\
+      app/modules/identity/schemas.py \\
+      app/modules/identity/service.py \\
+      app/modules/identity/google_port.py \\
+      app/modules/identity/google_adapter.py
+```
+
+### Windows PowerShell
+
+```powershell
+New-Item -ItemType Directory -Force app/modules/identity
+@("router.py", "schemas.py", "service.py", "google_port.py", "google_adapter.py") |
+    ForEach-Object { New-Item -ItemType File -Force "app/modules/identity/$_" }
+```
+
+Después de ejecutar los comandos, la estructura inicial debe quedar así:
+
+```text
+app/modules/identity/
+├── google_adapter.py
+├── google_port.py
+├── router.py
+├── schemas.py
+└── service.py
+```
+
 ## Puerto de identidad — DIP e ISP
 
 En `app/modules/identity/google_port.py`:

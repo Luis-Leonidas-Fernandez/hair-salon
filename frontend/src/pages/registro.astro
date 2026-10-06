@@ -1,0 +1,81 @@
+---
+import '../styles/global.css';
+import '../styles/registro.css';
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Vista previa visual de registro con Google para After Look / Peluquería Sergio." />
+    <title>Registro con Google / After Look</title>
+  </head>
+  <body class="registro-page">
+    <main class="registro-shell" aria-labelledby="registro-title">
+      <section class="registro-photo-panel" aria-label="Imagen editorial del salón">
+        <img src="/images/hero-barber.png" alt="Barbero trabajando en un salón oscuro, imagen ilustrativa" />
+        <div class="registro-mobile-overlay" aria-hidden="true"></div>
+        <a class="registro-brand" href="/" aria-label="Volver al inicio de After Look">After Look</a>
+        <div class="registro-photo-caption" aria-hidden="true">
+          <span></span>
+          <p>Vista visual de acceso</p>
+        </div>
+      </section>
+
+      <section class="registro-content-panel">
+        <div class="registro-copy">
+          <a class="registro-back" href="/" aria-label="Volver a la página de inicio">← Volver al inicio</a>
+          <p class="registro-kicker">Registro exclusivo</p>
+          <h1 id="registro-title">Ingresá a After Look con tu cuenta de Google.</h1>
+          <p class="registro-lede">Una entrada simple para futuras consultas y reservas del salón. Esta pantalla es una vista previa visual: el registro todavía no está activo.</p>
+        </div>
+
+        <div class="registro-action-card" aria-label="Acceso seguro con Google">
+          <a class="google-register-button" href="/auth/google/start?source=web" id="google-auth-btn">
+            <svg class="google-mark" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+              <path fill="#4285F4" d="M23.52 12.27c0-.82-.07-1.6-.2-2.36H12v4.46h6.47a5.54 5.54 0 0 1-2.4 3.64v2.98h3.88c2.27-2.1 3.57-5.19 3.57-8.72Z" />
+              <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.91l-3.88-2.98c-1.08.72-2.45 1.14-4.07 1.14-3.13 0-5.78-2.1-6.73-4.94H1.26v3.08A12 12 0 0 0 12 24Z" />
+              <path fill="#FBBC05" d="M5.27 14.31A7.2 7.2 0 0 1 4.89 12c0-.8.14-1.58.38-2.31V6.61H1.26A12 12 0 0 0 0 12c0 1.93.46 3.76 1.26 5.39l4.01-3.08Z" />
+              <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.44-3.43A11.54 11.54 0 0 0 12 0 12 12 0 0 0 1.26 6.61l4.01 3.08C6.22 6.85 8.87 4.75 12 4.75Z" />
+            </svg>
+            <span>Continuar con Google</span>
+          </a>
+          <p class="registro-note" id="registro-feedback" role="status" aria-live="polite">Acceso seguro mediante OpenID Connect. Tus datos de reserva están protegidos.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const ERROR_MESSAGES: Record<string, string> = {
+        GOOGLE_NOT_CONFIGURED: "El acceso con Google no está configurado en este entorno.",
+        GOOGLE_ACCESS_DENIED: "Se canceló el acceso con Google.",
+        GOOGLE_SESSION_EXPIRED: "La sesión de inicio de sesión venció o no es válida. Intentá nuevamente.",
+        GOOGLE_AUTH_FAILED: "No pudimos validar tu cuenta de Google. Intentá de nuevo.",
+        CLIENT_ACCOUNT_SUSPENDED: "Tu cuenta de cliente está suspendida. Contactá al salón.",
+        STAFF_ACCOUNT_INACTIVE: "La cuenta de empleado se encuentra desactivada.",
+        GOOGLE_UNVERIFIED_EMAIL: "Tu cuenta de Google debe tener un correo electrónico verificado.",
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      const authError = params.get("auth_error");
+      const completarDatos = params.get("completar_datos");
+      const feedback = document.getElementById("registro-feedback");
+
+      if (authError) {
+        const mensaje = ERROR_MESSAGES[authError] || "Ocurrió un inconveniente al validar con Google.";
+        if (feedback) {
+          feedback.textContent = mensaje;
+          feedback.style.color = "#ff6b6b";
+        }
+        window.history.replaceState(null, "", window.location.pathname);
+      } else if (completarDatos) {
+        if (feedback) {
+          feedback.textContent = "Bienvenido/a. Para completar tu primer turno, te solicitaremos un número de contacto.";
+          feedback.style.color = "#e5c07b";
+        }
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    </script>
+  </body>
+</html>

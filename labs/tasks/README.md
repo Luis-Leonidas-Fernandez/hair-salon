@@ -19,6 +19,10 @@ Estas son únicamente las tareas que todavía faltan implementar para completar 
 | 05 | `TASK-05-pruebas-del-mvp.md` | Pruebas unitarias, integración y concurrencia. |
 | 06 | `TASK-06-google-calendar.md` | Sincronización desacoplada e idempotente. |
 
+## Carril demo separado
+
+- [TASK DEMO 01 Frontend de reservas](demo/TASK-DEMO-01-frontend-reservas.md) — plan responsive de Astro estático construido con Node y servido por FastAPI bajo `/demo` en una demo local/privada. **Pendiente**: depende de los contratos de TASK-03 y TASK-04; no forma parte del orden de finalización del MVP ni indica implementación completada.
+
 ## Infraestructura ya disponible
 
 - Configuración tipada desde `.env`.

@@ -66,6 +66,9 @@ class User(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     nombre_completo: Mapped[str] = mapped_column(String(150), nullable=False)
     email_google: Mapped[str] = mapped_column(String(254), unique=True, nullable=False)
+    google_sub: Mapped[str | None] = mapped_column(
+        String(255), unique=True, nullable=True, index=True
+    )
     rol_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("roles.id", ondelete="RESTRICT"), nullable=False
     )
@@ -94,6 +97,9 @@ class Client(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     nombre: Mapped[str] = mapped_column(String(150), nullable=False)
     email_google: Mapped[str] = mapped_column(String(254), unique=True, nullable=False)
+    google_sub: Mapped[str | None] = mapped_column(
+        String(255), unique=True, nullable=True, index=True
+    )
     telefono: Mapped[str | None] = mapped_column(String(30), nullable=True)
     whatsapp: Mapped[str | None] = mapped_column(String(30), nullable=True)
     fecha_nacimiento: Mapped[date | None] = mapped_column(Date, nullable=True)
