@@ -274,28 +274,19 @@ The most important first safety property is preventing overlapping appointments 
 
 ## Project status
 
-**Current stage:** documentation validated and application foundation started.
+**Current stage:** In production on Render (`after-look-app`).
 
-Completed or defined:
+Completed milestones:
 
-- MVP scope and exclusions;
-- functional and non-functional requirements;
-- business validation results;
-- conceptual, logical, and physical data models;
-- ORM mismatch analysis;
-- business rules and use cases;
-- ADRs with stable identifiers;
-- change-request template and example;
-- initial FastAPI project structure and error hierarchy.
-
-Next implementation milestones:
-
-1. complete project configuration and database migration setup;
-2. implement identity and Google OAuth flow;
-3. implement services and professional availability;
-4. implement appointment creation with overlap protection;
-5. add tests for the booking rules and API flows;
-6. connect Google Calendar after the core booking flow is stable.
+- Full-stack unified architecture (FastAPI backend + Astro frontend compiled in multi-stage Docker).
+- Production deployment on Render cloud with managed PostgreSQL database.
+- Google OAuth 2.0 / OpenID Connect authentication with dynamic role routing (Staff vs. Client).
+- Multi-hairdresser availability and booking system with database-level overlap protection.
+- Hairdresser agenda and real-time appointment management (`/peluquero/turnos`).
+- Direct Google registration home (`/`) and mobile-optimized booking UX.
+- 56 automated tests passing with 100% test coverage and 0 lint issues.
+- Architectural decision records documented up to [ADR-017](docs/phase_01/adr/ADR-017-despliegue-continuo-en-render-con-docker-unificado-y-resolucion-dinamica-de-roles.md).
+- Implementation state tracked in [Estado_implementacion_Peluqueria_Sergio_v1.6.md](docs/phase_01/implementation/Estado_implementacion_Peluqueria_Sergio_v1.6.md).
 
 ---
 
