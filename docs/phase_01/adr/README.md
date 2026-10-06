@@ -33,4 +33,5 @@ Los ADR no reemplazan requisitos ni diagramas. Sirven para conservar el porqué 
 | [ADR-015](ADR-015-modulo-de-reservas-y-optimizacion-de-disponibilidad.md) | Módulo de reservas, cálculo de disponibilidad y optimización del callback | Aceptado |
 | [ADR-016](ADR-016-home-de-registro-y-refinamiento-de-experiencia-de-usuario.md) | Home de registro, inhabilitación no destructiva de servicios y refinamiento de UX | Aceptado |
 | [ADR-017](ADR-017-despliegue-continuo-en-render-con-docker-unificado-y-resolucion-dinamica-de-roles.md) | Despliegue continuo en Render con Docker unificado y resolución dinámica de roles | Aceptado |
+| [ADR-018](ADR-018-estrategia-integracion-google-calendar-clientes-y-staff.md) | Estrategia de integración de Google Calendar para clientes y peluqueros | Aceptado |
 

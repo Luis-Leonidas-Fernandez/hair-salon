@@ -43,3 +43,4 @@ La base de datos seguirá siendo la fuente oficial de verdad. Google Calendar y 
 
 - `docs/phase_01/validations/v1.1/Resultado_reunion_validacion_Peluqueria_Sergio_v1.1.md`
 - `docs/phase_01/requirements/v1.1/Requisitos_no_funcionales_Peluqueria_Sergio_v1.1.md`
+- [ADR-018: Estrategia de integración de Google Calendar para clientes y peluqueros](ADR-018-estrategia-integracion-google-calendar-clientes-y-staff.md)
