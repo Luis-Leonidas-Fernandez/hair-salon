@@ -19,6 +19,7 @@ WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
     PORT=8000
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -39,4 +40,4 @@ COPY --from=frontend-builder /app/frontend/dist/ ./frontend/dist/
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "alembic upgrade head && python scripts/seed_initial_data.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "alembic upgrade head && python -m scripts.seed_initial_data && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
