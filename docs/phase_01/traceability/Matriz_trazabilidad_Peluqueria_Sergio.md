@@ -67,6 +67,9 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 | ADR-013 | Versionar y sincronizar el estado de implementación | Estado v1.2, v1.3 y v1.4, trazabilidad y TASKS alineadas. |
 | ADR-014 | Autenticación con Google OpenID Connect y servidor unificado | Identidad OIDC, inmutabilidad `google_sub`, sesión JWT y hosting unificado. |
 | ADR-015 | Módulo de reservas, cálculo de disponibilidad y optimización del callback | Módulo `booking`, cálculo de franjas de 30 min, persistencia de reservas y pool HTTP. |
+| ADR-016 | Home de registro, inhabilitación no destructiva de servicios y refinamiento de UX | Registro directo Google, archivo landing y experiencia móvil. |
+| ADR-017 | Despliegue continuo en Render con Docker unificado y resolución dinámica de roles | Docker multi-stage, normalización Postgres, roles dinámicos de staff. |
+| ADR-018 | Estrategia de integración de Google Calendar para clientes y peluqueros | Action Template en reservas y feed RFC 5545 iCalendar para peluqueros. |
 
 ## 4. Cobertura por modelo de datos
 
@@ -91,7 +94,7 @@ Este documento relaciona reglas de negocio, requisitos funcionales, requisitos n
 | Definir WhatsApp | RF-021, CU-013, ADR-008, MVP | Resolver proveedor, costo y obligatoriedad. |
 | Diferenciar AGENDADA, RESERVADA y CONFIRMADA | BR, RF-018, CU-011, ADR-005, modelos | Confirmar si son estados distintos o se simplifican. |
 | Definir descansos | BR, RF-014, RF-015, CU-008, CU-009 | Mantener bloqueos manuales hasta validar automatización. |
-| Política de reintentos Calendar | RF-023, CU-012, ADR-008 | Definir cantidad de reintentos y criterio de alerta. |
+| Política de reintentos Calendar | RF-023, CU-012, ADR-008, ADR-018 | Resuelto con feed pull RFC 5545 desatendido y Action Template sin fallas salientes. |
 | Actualizar desajuste objeto-relacional | ADR-004, modelos, RF | Alinear el documento con estados, Calendar y modelos v1.1. |
 
 ## 6. Verificación de consistencia

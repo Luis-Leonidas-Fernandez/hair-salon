@@ -2,7 +2,7 @@
 
 ## Estado
 
-Aceptado
+Implementado
 
 ## Contexto
 
@@ -27,11 +27,11 @@ Se adopta una **estrategia combinada y desacoplada de doble vía**:
      - **Título:** *{Servicio} con {Peluquero} - After Look*
      - **Horario:** Fechas y horas de inicio y fin exactas calculadas en formato ISO UTC (`YYYYMMDDTHHMMSSZ`).
      - **Detalle:** ID de reserva, precio estimado, notas y recordatorio del salón.
-     - **Ubicación:** Dirección física de la peluquería.
+     - **Ubicación:** Ubicación del negocio.
    - **Cero fricción:** No requiere pedir scopes de calendario en el OAuth inicial, garantizando una tasa de registro limpia y transparente.
 
 2. **Para Peluqueros — Suscripción Automática por Feed iCalendar (`.ics`):**
-   - El backend expondrá un endpoint privado de calendario bajo el estándar RFC 5545 (`text/calendar`):
+   - El backend expone un endpoint privado de calendario bajo el estándar RFC 5545 (`text/calendar`):
      ```text
      GET /api/calendar/hairdresser/{hairdresser_id}/feed.ics?token={security_token}
      ```
@@ -59,6 +59,9 @@ Se adopta una **estrategia combinada y desacoplada de doble vía**:
 ## Evidencia relacionada
 
 * `docs/phase_01/adr/ADR-008-incorporar-google-calendar-y-postergar-whatsapp-pagos.md`
+* `docs/phase_01/implementation/Estado_implementacion_Peluqueria_Sergio_v1.7.md`
 * `app/modules/services/shared/models.py` (`CalendarEvent`)
+* `app/modules/calendar/` (`security.py`, `ics_builder.py`, `service.py`, `router.py`, `schemas.py`)
 * `frontend/src/pages/reservas.astro`
 * `frontend/src/pages/peluquero/turnos.astro`
+* `tests/test_calendar_feed.py`

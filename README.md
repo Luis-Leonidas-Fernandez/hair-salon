@@ -284,9 +284,10 @@ Completed milestones:
 - Multi-hairdresser availability and booking system with database-level overlap protection.
 - Hairdresser agenda and real-time appointment management (`/peluquero/turnos`).
 - Direct Google registration home (`/`) and mobile-optimized booking UX.
-- 56 automated tests passing with 100% test coverage and 0 lint issues.
-- Architectural decision records documented up to [ADR-017](docs/phase_01/adr/ADR-017-despliegue-continuo-en-render-con-docker-unificado-y-resolucion-dinamica-de-roles.md).
-- Implementation state tracked in [Estado_implementacion_Peluqueria_Sergio_v1.6.md](docs/phase_01/implementation/Estado_implementacion_Peluqueria_Sergio_v1.6.md).
+- Google Calendar two-track integration (Client Action Template & Hairdresser RFC 5545 iCalendar background sync feed) under CU-012 and [ADR-018](docs/phase_01/adr/ADR-018-estrategia-integracion-google-calendar-clientes-y-staff.md).
+- 68 automated tests passing with 100% test coverage and 0 lint issues.
+- Architectural decision records documented up to [ADR-018](docs/phase_01/adr/ADR-018-estrategia-integracion-google-calendar-clientes-y-staff.md).
+- Implementation state tracked in [Estado_implementacion_Peluqueria_Sergio_v1.7.md](docs/phase_01/implementation/Estado_implementacion_Peluqueria_Sergio_v1.7.md).
 
 ---
 
