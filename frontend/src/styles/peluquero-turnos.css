@@ -179,6 +179,36 @@ html {
   box-shadow: 0 0 6px var(--accent);
 }
 
+.btn-sync-calendar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.16), rgba(212, 175, 55, 0.05));
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: #fef08a;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 750;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-sync-calendar:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.28), rgba(212, 175, 55, 0.12));
+  border-color: rgba(212, 175, 55, 0.8);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.25);
+}
+
+.btn-sync-calendar:active {
+  transform: translateY(0);
+}
+
 .btn-logout {
   background: rgba(255, 250, 241, .06);
   border: 1px solid rgba(255, 250, 241, .18);
@@ -1098,6 +1128,263 @@ html {
 }
 
 /* ==========================================================================
+   Google Calendar Synchronization Modal (ADR-018, CU-012)
+   Dark Luxury Gold-Glassmorphism Styling
+   ========================================================================== */
+
+.sync-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(3, 4, 11, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: syncFadeIn 0.2s ease-out;
+}
+
+.sync-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  border-radius: 24px;
+  border: 1px solid rgba(248, 197, 107, 0.25);
+  background: linear-gradient(180deg, rgba(22, 23, 30, 0.98), rgba(12, 13, 18, 0.99));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(212, 175, 55, 0.08);
+  padding: clamp(20px, 3.5vw, 32px);
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: syncScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+@keyframes syncFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes syncScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.sync-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(248, 197, 107, 0.15);
+}
+
+.sync-modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sync-modal-icon {
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+}
+
+.sync-modal-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.2vw, 22px);
+  font-weight: 850;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.sync-modal-close {
+  background: rgba(255, 250, 241, 0.06);
+  border: 1px solid rgba(255, 250, 241, 0.15);
+  color: rgba(255, 250, 241, 0.7);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sync-modal-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.sync-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sync-modal-desc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(255, 250, 241, 0.78);
+}
+
+.sync-feed-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sync-field-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(248, 197, 107, 0.9);
+  text-transform: uppercase;
+}
+
+.sync-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(3, 4, 11, 0.6);
+  border: 1px solid rgba(255, 250, 241, 0.15);
+  border-radius: 12px;
+  padding: 4px 6px 4px 12px;
+  transition: border-color 0.2s ease;
+}
+
+.sync-input-group:focus-within {
+  border-color: rgba(248, 197, 107, 0.6);
+  box-shadow: 0 0 0 3px rgba(248, 197, 107, 0.1);
+}
+
+.sync-feed-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 250, 241, 0.95);
+  font-size: 12.5px;
+  font-family: monospace;
+  outline: none;
+  text-overflow: ellipsis;
+}
+
+.btn-copy-feed {
+  background: rgba(248, 197, 107, 0.15);
+  border: 1px solid rgba(248, 197, 107, 0.35);
+  color: #fef08a;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-copy-feed:hover {
+  background: rgba(248, 197, 107, 0.3);
+  border-color: rgba(248, 197, 107, 0.6);
+  color: #fff;
+}
+
+.btn-copy-feed.copied {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #86efac;
+}
+
+.sync-instructions {
+  background: rgba(255, 250, 241, 0.035);
+  border: 1px solid rgba(255, 250, 241, 0.08);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 12.5px;
+}
+
+.sync-instructions-title {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: rgba(255, 250, 241, 0.9);
+}
+
+.sync-instructions-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: rgba(255, 250, 241, 0.72);
+  line-height: 1.45;
+}
+
+.sync-instructions-list strong {
+  color: rgba(255, 250, 241, 0.9);
+}
+
+.sync-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.btn-open-google-cal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(248, 197, 107, 0.6);
+  background: var(--gold-metal);
+  color: var(--accent-ink);
+  font-weight: 850;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-open-google-cal:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(248, 197, 107, 0.25);
+}
+
+.btn-sync-modal-dismiss {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 250, 241, 0.2);
+  background: transparent;
+  color: rgba(255, 250, 241, 0.8);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sync-modal-dismiss:hover {
+  background: rgba(255, 250, 241, 0.08);
+  color: #fff;
+}
+
+/* ==========================================================================
    Responsive Breakpoints: Tablet & Large Mobile (<= 960px)
    ========================================================================== */
 
@@ -1163,6 +1450,14 @@ html {
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
+    flex-wrap: wrap;
+  }
+
+  .btn-sync-calendar {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    min-height: 40px;
   }
 
   .stylist-session-pill {
@@ -1383,6 +1678,35 @@ html {
    ========================================================================== */
 
 @media (max-width: 540px) {
+  .sync-modal-card {
+    padding: 18px 16px;
+    border-radius: 20px;
+    gap: 16px;
+  }
+
+  .sync-modal-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .btn-open-google-cal,
+  .btn-sync-modal-dismiss {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .sync-input-group {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px;
+  }
+
+  .btn-copy-feed {
+    width: 100%;
+    text-align: center;
+  }
+
   .booking-card {
     padding: 14px;
     border-radius: 18px;

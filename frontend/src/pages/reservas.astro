@@ -153,12 +153,12 @@ import '../styles/reservas.css';
         </div>
 
         <div class="modal-actions">
+          <a id="modal-calendar-btn" class="modal-btn-calendar" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
+            <span>📅 Guardar en Google Calendar</span>
+          </a>
           <button id="modal-new-booking-btn" class="modal-btn-primary" type="button">
             Agendar otro turno
           </button>
-          <a href="/" class="modal-btn-secondary" style="text-decoration: none; display: grid; place-items: center;">
-            Volver al inicio
-          </a>
         </div>
       </div>
     </div>
@@ -552,6 +552,13 @@ import '../styles/reservas.css';
         }
       }
 
+      function formatToCompactUtc(isoDateStr: string, durationMinutes = 60) {
+        const start = new Date(isoDateStr);
+        const end = new Date(start.getTime() + durationMinutes * 60 * 1000);
+        const toUtc = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+        return { startUtc: toUtc(start), endUtc: toUtc(end) };
+      }
+
       function setupConfirmationFlow() {
         const confirmBtn = document.getElementById("confirm-booking-btn") as HTMLButtonElement | null;
         const notesInput = document.getElementById("booking-notes") as HTMLTextAreaElement | null;
@@ -563,6 +570,7 @@ import '../styles/reservas.css';
         const modalBookingStylist = document.getElementById("modal-booking-stylist");
         const modalBookingDatetime = document.getElementById("modal-booking-datetime");
         const modalNewBookingBtn = document.getElementById("modal-new-booking-btn");
+        const modalCalendarBtn = document.getElementById("modal-calendar-btn") as HTMLAnchorElement | null;
 
         if (confirmBtn) {
           confirmBtn.addEventListener("click", async () => {
@@ -602,6 +610,28 @@ import '../styles/reservas.css';
                   modalBookingDatetime.textContent = `${d}/${m}/${y} — ${selectedTimeStr} hs`;
                 }
 
+                // Construct Google Calendar Action Template URL
+                const duration = booking.duracion_minutos || (selectedService ? selectedService.duracion_minutos : 60);
+                const isoDate = booking.fecha_inicio || `${selectedDateStr}T${selectedTimeStr}:00`;
+                const { startUtc, endUtc } = formatToCompactUtc(isoDate, duration);
+
+                const title = encodeURIComponent(`${booking.servicio_nombre} - After Look (${booking.peluquero_nombre})`);
+                const details = encodeURIComponent(
+                  `Reserva #${booking.id} en After Look\n\n` +
+                  `Servicio: ${booking.servicio_nombre}\n` +
+                  `Profesional: ${booking.peluquero_nombre}\n` +
+                  (booking.notas_cliente ? `Notas: ${booking.notas_cliente}\n\n` : `\n`) +
+                  `Dirección: Avenida Vélez Sarsfield 854\n` +
+                  `Si necesitás reprogramar o cancelar, ingresá a tu cuenta en After Look.`
+                );
+                const location = encodeURIComponent("Avenida Vélez Sarsfield 854");
+                const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startUtc}/${endUtc}&details=${details}&location=${location}`;
+
+                if (modalCalendarBtn) {
+                  modalCalendarBtn.href = calUrl;
+                  modalCalendarBtn.style.display = "flex";
+                }
+
                 if (modal) modal.style.display = "grid";
 
                 if (statusNote) {
@@ -637,6 +667,10 @@ import '../styles/reservas.css';
         if (modalNewBookingBtn && modal) {
           modalNewBookingBtn.addEventListener("click", () => {
             modal.style.display = "none";
+            if (modalCalendarBtn) {
+              modalCalendarBtn.style.display = "none";
+              modalCalendarBtn.href = "#";
+            }
             if (notesInput) notesInput.value = "";
             fetchAvailability();
           });

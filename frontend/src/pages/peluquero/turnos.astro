@@ -19,6 +19,9 @@ import '../../styles/peluquero-turnos.css';
           <a class="turnos-brand" href="/" aria-label="After Look">After Look</a>
         </div>
         <div class="turnos-nav-right">
+          <button id="btn-sync-calendar" type="button" class="btn-sync-calendar" aria-label="Sincronizar Google Calendar">
+            📅 Sincronizar Calendario
+          </button>
           <div class="stylist-session-pill">
             <div class="stylist-avatar-mini" id="stylist-avatar-initials">P</div>
             <span class="stylist-greeting-text" id="hairdresser-greeting">
@@ -107,6 +110,66 @@ import '../../styles/peluquero-turnos.css';
       </main>
     </div>
 
+    <!-- Modal de sincronización Google Calendar -->
+    <div id="calendar-sync-modal" class="sync-modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="sync-modal-title">
+      <div class="sync-modal-card">
+        <div class="sync-modal-header">
+          <div class="sync-modal-title-wrap">
+            <span class="sync-modal-icon" aria-hidden="true">📅</span>
+            <h2 id="sync-modal-title" class="sync-modal-title">Sincronizar con Google Calendar</h2>
+          </div>
+          <button id="sync-modal-close-btn" type="button" class="sync-modal-close" aria-label="Cerrar modal">&times;</button>
+        </div>
+
+        <div class="sync-modal-body">
+          <p class="sync-modal-desc">
+            Sincronizá tu agenda de After Look con tu calendario personal. Una vez vinculado, todos los turnos confirmados y cancelaciones se reflejarán automáticamente en tu teléfono y aplicación de Google Calendar.
+          </p>
+
+          <div class="sync-feed-box">
+            <label for="sync-feed-url-input" class="sync-field-label">Enlace de suscripción iCalendar (RFC 5545):</label>
+            <div class="sync-input-group">
+              <input
+                id="sync-feed-url-input"
+                type="text"
+                readonly
+                class="sync-feed-input"
+                placeholder="Cargando enlace..."
+                aria-label="Enlace del feed iCalendar"
+              />
+              <button id="btn-copy-feed-url" type="button" class="btn-copy-feed" aria-label="Copiar enlace">
+                <span id="copy-btn-text">Copiar enlace</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="sync-instructions">
+            <h4 class="sync-instructions-title">¿Cómo funciona?</h4>
+            <ul class="sync-instructions-list">
+              <li><strong>Directo en Google Calendar:</strong> Hacé clic en "Abrir en Google Calendar" para suscribirte al instante en tu cuenta.</li>
+              <li><strong>Otras aplicaciones (Apple Calendar / Outlook):</strong> Copiá el enlace y pegalo en la opción <em>"Suscribirse a calendario / Agregar desde URL"</em>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="sync-modal-footer">
+          <a
+            id="btn-open-google-calendar"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-open-google-cal"
+          >
+            <span>Abrir en Google Calendar</span>
+            <span aria-hidden="true" style="margin-left: 4px;">↗</span>
+          </a>
+          <button id="btn-close-sync-modal" type="button" class="btn-sync-modal-dismiss">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
@@ -135,9 +198,18 @@ import '../../styles/peluquero-turnos.css';
         created_at: string;
       }
 
+      interface CalendarFeedData {
+        hairdresser_id: number;
+        token: string;
+        feed_url: string;
+        webcal_url: string;
+        google_subscribe_url: string;
+      }
+
       let allBookings: HairdresserBooking[] = [];
       let currentDateFilter: string = new Date().toISOString().slice(0, 10);
       let currentStatusFilter: string = "";
+      let calendarFeedData: CalendarFeedData | null = null;
 
       // Toast notification helper
       function showToast(message: string, isError = false) {
@@ -538,8 +610,104 @@ import '../../styles/peluquero-turnos.css';
           });
         });
 
-        // 5. Initial load
+        // 5. Calendar Sync Setup & Feed loading
+        setupCalendarSyncModal();
+        loadCalendarFeed();
+
+        // 6. Initial load
         await loadBookings();
+      }
+
+      function setupCalendarSyncModal() {
+        const modal = document.getElementById("calendar-sync-modal");
+        const btnOpen = document.getElementById("btn-sync-calendar");
+        const btnClose = document.getElementById("sync-modal-close-btn");
+        const btnDismiss = document.getElementById("btn-close-sync-modal");
+        const btnCopy = document.getElementById("btn-copy-feed-url");
+        const copyText = document.getElementById("copy-btn-text");
+        const inputUrl = document.getElementById("sync-feed-url-input") as HTMLInputElement | null;
+        const btnGoogleCal = document.getElementById("btn-open-google-calendar") as HTMLAnchorElement | null;
+
+        const openModal = () => {
+          if (modal) {
+            modal.style.display = "flex";
+            document.body.style.overflow = "hidden";
+          }
+        };
+
+        const closeModal = () => {
+          if (modal) {
+            modal.style.display = "none";
+            document.body.style.overflow = "";
+          }
+        };
+
+        btnOpen?.addEventListener("click", openModal);
+        btnClose?.addEventListener("click", closeModal);
+        btnDismiss?.addEventListener("click", closeModal);
+
+        modal?.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            closeModal();
+          }
+        });
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && modal && modal.style.display !== "none") {
+            closeModal();
+          }
+        });
+
+        btnCopy?.addEventListener("click", async () => {
+          const urlToCopy = inputUrl?.value || calendarFeedData?.feed_url;
+          if (!urlToCopy) return;
+
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(urlToCopy);
+            } else if (inputUrl) {
+              inputUrl.select();
+              document.execCommand("copy");
+            }
+
+            if (copyText) {
+              const prev = copyText.textContent;
+              copyText.textContent = "¡Copiado!";
+              btnCopy.classList.add("copied");
+              setTimeout(() => {
+                copyText.textContent = prev || "Copiar enlace";
+                btnCopy.classList.remove("copied");
+              }, 2500);
+            }
+            showToast("Enlace de calendario copiado al portapapeles");
+          } catch {
+            showToast("No se pudo copiar el enlace", true);
+          }
+        });
+
+        if (calendarFeedData) {
+          if (inputUrl) inputUrl.value = calendarFeedData.feed_url;
+          if (btnGoogleCal) btnGoogleCal.href = calendarFeedData.google_subscribe_url;
+        }
+      }
+
+      async function loadCalendarFeed() {
+        try {
+          const res = await fetch("/api/calendar/hairdresser/my-feed-url");
+          if (res.ok) {
+            calendarFeedData = await res.json();
+            const inputUrl = document.getElementById("sync-feed-url-input") as HTMLInputElement | null;
+            const btnGoogleCal = document.getElementById("btn-open-google-calendar") as HTMLAnchorElement | null;
+            if (inputUrl && calendarFeedData) {
+              inputUrl.value = calendarFeedData.feed_url;
+            }
+            if (btnGoogleCal && calendarFeedData) {
+              btnGoogleCal.href = calendarFeedData.google_subscribe_url;
+            }
+          }
+        } catch (err) {
+          console.error("Error al obtener feed de calendario:", err);
+        }
       }
 
       document.addEventListener("DOMContentLoaded", init);
