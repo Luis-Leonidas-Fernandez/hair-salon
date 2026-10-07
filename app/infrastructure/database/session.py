@@ -28,3 +28,6 @@ async def get_db_session() -> AsyncIterator[AsyncSession]:
 
     async with AsyncSessionFactory() as session:
         yield session
+
+
+get_session = get_db_session

@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config.settings import get_settings
 from app.modules.booking.router import router as booking_router
+from app.modules.calendar.router import router as calendar_router
 from app.modules.identity.router import router as identity_router
 from app.shared.errors.application_error import ApplicationError
 from app.shared.errors.handlers import (
@@ -63,6 +64,7 @@ app.add_exception_handler(Exception, unexpected_error_handler)
 
 app.include_router(identity_router)
 app.include_router(booking_router)
+app.include_router(calendar_router)
 
 
 @app.get("/health")

@@ -40,3 +40,30 @@ def test_settings_normalizes_postgres_url() -> None:
         seed_hairdresser_2_email="h2@a.com",
     )
     assert settings.database_url == "postgresql+asyncpg://user:pass@render.com/db"
+
+
+def test_settings_calendar_configuration() -> None:
+    """Verify salon metadata and calendar feed settings defaults."""
+    settings = Settings(
+        database_url="postgresql+asyncpg://test:test@localhost:5432/afterlook_test",
+    )
+    assert settings.salon_name == "After Look"
+    assert settings.salon_address == "Avenida Vélez Sarsfield 854"
+    assert settings.salon_timezone == "America/Argentina/Buenos_Aires"
+    assert settings.calendar_feed_ttl_minutes == 60
+
+
+def test_settings_calendar_configuration_overrides(monkeypatch) -> None:
+    """Verify salon metadata can be customized from environment variables."""
+    monkeypatch.setenv("SALON_NAME", "After Look Nueva Córdoba")
+    monkeypatch.setenv("SALON_ADDRESS", "Bv. Chacabuco 123")
+    monkeypatch.setenv("SALON_TIMEZONE", "America/Argentina/Cordoba")
+    monkeypatch.setenv("CALENDAR_FEED_TTL_MINUTES", "30")
+
+    settings = Settings(
+        database_url="postgresql+asyncpg://test:test@localhost:5432/afterlook_test",
+    )
+    assert settings.salon_name == "After Look Nueva Córdoba"
+    assert settings.salon_address == "Bv. Chacabuco 123"
+    assert settings.salon_timezone == "America/Argentina/Cordoba"
+    assert settings.calendar_feed_ttl_minutes == 30

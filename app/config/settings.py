@@ -23,6 +23,7 @@ class Settings(BaseSettings):
         if v.startswith("postgresql://") and not v.startswith("postgresql+asyncpg://"):
             return v.replace("postgresql://", "postgresql+asyncpg://", 1)
         return v
+
     database_echo: bool = False
     database_pool_pre_ping: bool = True
     secret_key: str = "afterlook-default-secret-key-32-chars-long-secure!"
@@ -39,6 +40,10 @@ class Settings(BaseSettings):
     google_redirect_uri: str | None = None
     session_cookie_name: str = "afterlook_session"
     session_ttl_minutes: int = 480
+    salon_name: str = "After Look"
+    salon_address: str = "Avenida Vélez Sarsfield 854"
+    salon_timezone: str = "America/Argentina/Buenos_Aires"
+    calendar_feed_ttl_minutes: int = 60
 
     @property
     def google_oauth_enabled(self) -> bool:

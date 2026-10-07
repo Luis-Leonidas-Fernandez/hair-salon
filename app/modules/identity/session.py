@@ -75,7 +75,7 @@ def extract_session(
             nombre=claims.get("nombre", ""),
             profile_complete=claims.get("profile_complete", False),
         )
-    except (jwt.PyJWTError, KeyError, ValueError):
+    except jwt.PyJWTError, KeyError, ValueError:
         return None
 
 

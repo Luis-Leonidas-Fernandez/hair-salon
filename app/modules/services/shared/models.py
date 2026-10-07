@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 
 from sqlalchemy import (
@@ -252,6 +252,20 @@ class Booking(TimestampMixin, Base):
     eventos_calendario: Mapped[list[CalendarEvent]] = relationship(
         back_populates="reserva", cascade="all, delete-orphan"
     )
+
+    @property
+    def fecha_hora_inicio(self) -> datetime:
+        return self.fecha_inicio
+
+    @property
+    def fecha_hora_fin(self) -> datetime:
+        if self.fecha_fin is not None:
+            return self.fecha_fin
+        return self.fecha_inicio + timedelta(minutes=self.duracion_minutos)
+
+    @property
+    def notas(self) -> str | None:
+        return self.notas_cliente
 
     __table_args__ = (
         CheckConstraint(
