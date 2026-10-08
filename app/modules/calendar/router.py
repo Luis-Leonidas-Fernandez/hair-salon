@@ -46,21 +46,40 @@ async def get_my_calendar_feed_url(
     hairdresser_id = session.sub
     token = generate_hairdresser_feed_token(hairdresser_id, settings.secret_key)
 
-    base_url = (
-        settings.google_redirect_uri.split("/auth")[0]
-        if settings.google_redirect_uri
-        else str(request.base_url).rstrip("/")
+    # Detección robusta de esquema y host respetando proxies (Render / Cloudflare)
+    forwarded_proto = request.headers.get("x-forwarded-proto")
+    proto = (
+        forwarded_proto.split(",")[0].strip()
+        if forwarded_proto
+        else request.url.scheme
     )
+    forwarded_host = request.headers.get("x-forwarded-host")
+    host = (
+        forwarded_host.split(",")[0].strip()
+        if forwarded_host
+        else (request.headers.get("host") or request.url.netloc)
+    )
+
+    # En entornos remotos (Render / dominios públicos), asegurar siempre HTTPS
+    is_local = any(h in host.lower() for h in ("localhost", "127.0.0.1"))
+    if proto != "https" and not is_local:
+        proto = "https"
+
+    base_url = f"{proto}://{host}"
     feed_path = f"/api/calendar/hairdresser/{hairdresser_id}/feed.ics?token={token}"
-    feed_url = f"{base_url}{feed_path}" if base_url else feed_path
+    feed_url = f"{base_url}{feed_path}"
     webcal_url = feed_url.replace("https://", "webcal://").replace(
         "http://", "webcal://"
     )
     if not webcal_url.startswith("webcal://"):
         webcal_url = f"webcal://{webcal_url.lstrip('/')}"
 
+    # Google Calendar requiere el endpoint /calendar/render?cid= con el feed URL-encoded
+    from urllib.parse import quote
+
+    encoded_webcal = quote(webcal_url, safe="")
     google_subscribe_url = (
-        f"https://calendar.google.com/calendar/r/settings/addbyurl?cid={feed_url}"
+        f"https://calendar.google.com/calendar/render?cid={encoded_webcal}"
     )
 
     return HairdresserFeedUrlResponse(

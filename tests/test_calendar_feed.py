@@ -275,8 +275,27 @@ def test_my_feed_url_hairdresser_returns_200() -> None:
     assert data["token"] == expected_token
     expected_path = f"/api/calendar/hairdresser/3/feed.ics?token={expected_token}"
     assert expected_path in data["feed_url"]
-    assert data["webcal_url"].startswith("webcal://")
-    assert "addbyurl?cid=" in data["google_subscribe_url"]
+    assert (
+        "calendar.google.com/calendar/render?cid=webcal"
+        in data["google_subscribe_url"]
+    )
+
+    # Verify proxy headers (Render/Cloudflare HTTPS)
+    response_proxy = client.get(
+        "/api/calendar/hairdresser/my-feed-url",
+        headers={
+            "x-forwarded-proto": "https",
+            "x-forwarded-host": "after-look-app.onrender.com",
+        },
+    )
+    assert response_proxy.status_code == 200
+    data_proxy = response_proxy.json()
+    assert data_proxy["feed_url"].startswith(
+        "https://after-look-app.onrender.com/api/calendar"
+    )
+    assert data_proxy["webcal_url"].startswith(
+        "webcal://after-look-app.onrender.com/api/calendar"
+    )
 
     app.dependency_overrides.clear()
 
