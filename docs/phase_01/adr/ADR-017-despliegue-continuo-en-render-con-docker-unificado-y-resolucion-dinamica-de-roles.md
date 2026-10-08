@@ -22,9 +22,9 @@ Durante el proceso de despliegue en la nube mediante **Render**, surgieron los s
    - **Stage 2 (`runner`):** Basado en `python:3.12-slim`. Instala dependencias de Python desde `requirements.txt`, copia el código de la aplicación, migraciones y scripts, e incorpora el directorio compilado `/app/frontend/dist/`.
    - **Comando de inicio (`CMD`):** Encadena en un script de shell atómico:
      ```sh
-     alembic upgrade head && python -m scripts.seed_initial_data && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+     alembic upgrade head && python -m scripts.seed_initial_data && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'
      ```
-     Con `PYTHONPATH=/app` garantizado para la resolución limpia de módulos.
+     Con `PYTHONPATH=/app` garantizado para la resolución limpia de módulos y flags `--proxy-headers --forwarded-allow-ips='*'` para procesar adecuadamente los encabezados HTTPS del proxy inverso de Render.
 
 2. **Normalización Automática de `DATABASE_URL`:**
    - En `app/config/settings.py`, se implementó un validador Pydantic (`@field_validator("database_url")`) que reemplaza automáticamente prefijos `postgres://` o `postgresql://` por `postgresql+asyncpg://`, permitiendo copiar directamente la URL interna o externa provista por Render PostgreSQL sin intervención manual.

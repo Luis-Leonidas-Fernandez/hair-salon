@@ -37,28 +37,31 @@ Este documento conecta el diseño aprobado con lo que ya está implementado, ver
 ### 1. Integración con Google Calendar (CU-012 & ADR-018)
 * **Vía 1: Clientes (Zero-auth Action Template):**
   - Botón dinámico `📅 Guardar en Google Calendar` en el modal de confirmación de `/reservas`.
-  - Construcción de URL interactiva de Google Calendar con título, timestamps UTC ISO compactos (`YYYYMMDDTHHMMSSZ`), notas, costo y dirección del salón.
+  - Construcción de URL interactiva de Google Calendar con título, timestamps UTC ISO compactos (`YYYYMMDDTHHMMSSZ`), notas, costo y ubicación del negocio.
   - Cero fricción de scopes sensibles en OAuth de clientes.
 * **Vía 2: Staff / Peluqueros (Feed iCalendar RFC 5545 desatendido):**
   - Módulo backend `app/modules/calendar/` con generador RFC 5545 (`ics_builder.py`), escape estricto y folding de líneas a 75 bytes.
   - Acceso seguro mediante token HMAC-SHA256 en tiempo constante (`security.py`).
   - Endpoints: `GET /api/calendar/hairdresser/my-feed-url` (staff autenticado) y `GET /api/calendar/hairdresser/{id}/feed.ics?token=...` (feed público seguro con cache control).
-  - Modal interactivo en `/peluquero/turnos` con botón de copiado de URL y enlace directo para suscripción en 1 clic en Google Calendar.
+  - Detección robusta de esquemas HTTPS detrás de balanceadores (Render/Cloudflare) vía `X-Forwarded-Proto` y `X-Forwarded-Host` para evitar redirecciones 301 que impiden la suscripción de Google Calendar.
+  - Codificación percent-encoded (`urllib.parse.quote`) del parámetro `cid` apuntando a `https://calendar.google.com/calendar/render?cid={webcal_encoded}` para preservar el token HMAC de seguridad sin truncamientos.
+  - Modal interactivo en `/peluquero/turnos` con botón de copiado de URL (normalizado con `window.location.origin`) y enlace directo para suscripción en 1 clic en Google Calendar.
 
 ### 2. Infraestructura y Despliegue (Render Cloud)
 * **Web Service:** `after-look-app` ejecutándose sobre contenedor Linux optimizado (`python:3.12-slim` + Node.js 22 alpine en build multi-stage).
 * **Managed Database:** PostgreSQL 18 en región Virginia (US East) (`after-look-db`).
 * **Normalización Automática de Driver:** `Settings.normalize_database_url` convierte en caliente `postgres://` o `postgresql://` en `postgresql+asyncpg://`.
+* **Soporte Nativo de Proxy Reversos:** Uvicorn iniciado con `--proxy-headers --forwarded-allow-ips='*'` para resolución transparente de esquemas e IPs detrás de Render.
 
 ---
 
 ## Verificación y Tests Automatizados
 
-La suite completa consta de **67 tests automatizados pasando al 100%** (`pytest`) con **0 errores de linting** (`ruff`):
+La suite completa consta de **68 tests automatizados pasando al 100%** (`pytest`) con **0 errores de linting** (`ruff`):
 
 ```text
 tests/test_booking.py ......                                             [  8%]
-tests/test_calendar_feed.py ..........                                   [ 23%]
+tests/test_calendar_feed.py ...........                                  [ 23%]
 tests/test_database_integrity.py ..                                      [ 26%]
 tests/test_domain_types.py ..                                            [ 29%]
 tests/test_hairdresser_turnos.py .....                                   [ 37%]
@@ -71,5 +74,5 @@ tests/test_models.py .                                                   [ 82%]
 tests/test_seed_validations.py .........                                 [ 95%]
 tests/test_settings.py ...                                               [100%]
 
-======================== 67 passed, 2 warnings in 0.39s ========================
+======================== 68 passed, 2 warnings in 0.41s ========================
 ```

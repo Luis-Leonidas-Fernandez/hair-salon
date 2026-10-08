@@ -35,8 +35,18 @@ Se adopta una **estrategia combinada y desacoplada de doble vía**:
      ```text
      GET /api/calendar/hairdresser/{hairdresser_id}/feed.ics?token={security_token}
      ```
-   - En el panel del peluquero (`/peluquero/turnos`), se provee la opción de suscripción **"Sincronizar con Google Calendar"** con su enlace seguro.
-   - El peluquero vincula la URL una sola vez en su Google Calendar mediante la opción *"Agregar calendario desde URL"*.
+   - **Resolución robusta de protocolo detrás de Proxies Reversos (Cloudflare / Render):**
+     - En entornos cloud como Render, el tráfico ingresa cifrado por HTTPS pero el proxy reenvía internamente la petición a Uvicorn vía HTTP.
+     - Para evitar que la URL del feed se genere con `http://` (lo cual genera una redirección 301 de Cloudflare que el crawler de Google Calendar rechaza con *"no se pudo añadir al calendario, comprueba la url"*), el backend inspecciona los encabezados `X-Forwarded-Proto` y `X-Forwarded-Host`, forzando siempre `https://` en dominios no locales.
+     - Uvicorn se inicia con `--proxy-headers --forwarded-allow-ips='*'` en el contenedor Docker.
+   - **Codificación Percent-Encoded del Parámetro `cid`:**
+     - El enlace de 1 clic para suscripción directa en Google Calendar se construye apuntando al endpoint interactivo:
+       ```text
+       https://calendar.google.com/calendar/render?cid={webcal_url_encoded}
+       ```
+     - La URL del feed se codifica completamente (`urllib.parse.quote(webcal_url, safe="")` en backend y `encodeURIComponent` en frontend) para asegurar que Google Calendar no fragmente los parámetros de query ni descarte el `?token=...`, garantizando una autenticación exitosa (200 OK) sin errores 403.
+   - En el panel del peluquero (`/peluquero/turnos`), se provee la opción de suscripción **"Sincronizar con Google Calendar"** con su enlace seguro normalizado automáticamente con `window.location.origin`.
+   - El peluquero vincula la URL una sola vez en su Google Calendar mediante la opción *"Agregar calendario desde URL"* o en 1 clic desde el botón directo.
    - Google Calendar consulta periódicamente el feed y refleja de forma desatendida todos los turnos confirmados y actualizados del profesional en su calendario móvil.
 
 ## Consecuencias
